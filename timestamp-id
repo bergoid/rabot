@@ -1,0 +1,34 @@
+#!/bin/bash
+
+. rabot-common
+if [ "$?" -ne "0" ]; then
+  echo "$0: Error while sourcing rabot-common" >&2
+  exit 1
+fi
+
+checkForHelp $1
+
+: << DOCSTRING
+Usage: $(basename "$0")
+
+'$(basename "$0")' will print the current time plus a
+3-character random alphanumerical string in the following way:
+
+    YYYYMMDDhhmmss_RND
+
+where 'YYYYMMDDhhmmss' is the timestamp (produced by 'fullts')
+and 'RND' is the random string (produced by 'randid').
+
+Example:
+
+    user@host ~ $ timestamp-id
+    20140328133629_1oy
+
+See also: 'fullts', 'randid'
+DOCSTRING
+
+require fullts
+require randid
+
+echo "$(fullts)_$(randid)"
+

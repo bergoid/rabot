@@ -1,0 +1,500 @@
+#!/bin/bash
+
+[ -n "$RABOT_COMMON" ] && return || readonly RABOT_COMMON=1
+
+############################################################
+#                                                          #
+#    Some utility functions used by the 'rabot' scripts    #
+#                                                          #
+############################################################
+
+
+############################################################
+#
+# Print to stderr
+#
+# errcho [ARGS]
+#
+function errcho
+{
+    echo "$*" >&2
+}
+
+
+############################################################
+#
+# Exit bash script after printing a message to stderr
+#
+# exitWith EXITSTAUS MESSAGE
+#
+# EXITSTATUS : (default 1) the exit status
+# MESSAGE : (default empty) the message
+#
+function exitWith
+{
+    if [ -n "$2" ]; then
+        errcho "$2"
+    fi
+    if [ -n "$1" ]; then
+        exit "$1"
+    else
+        exit 1
+    fi
+}
+
+
+############################################################
+#
+# Exit bash script and print a message to stderr if a previous
+# command returned with a non-zero exit status. Do nothing
+# otherwise.
+#
+# exitOnError EXITSTATUS MESSAGE
+#
+# EXITSTATUS : (default 1) the exit status
+# MESSAGE : (default empty) the message
+#
+# Warning: If bash commands are executed on-the-fly to produce the
+#          message string, the exit status of the previous command
+#          will be reset before control reaches the body of the
+#          function 'exitOnError'. For example, the following command:
+#
+#               exitOnError 1 "The directory: $(pwd) is empty"
+#
+#          will never abort the script as long as the 'pwd' command
+#          succeeds.
+#
+function exitOnError
+{
+    exitStatus="$?"
+
+    if [ "$exitStatus" -ne "0" ]; then
+        exitWith ${1:-1} "Error: ${2:-unknown}"
+    fi
+}
+
+
+############################################################
+#
+# Test if one directory is a subdirectory of another.
+# Print result to stdout. Both directories must exist.
+#
+# isSubdirOf DIR1 DIR2
+#
+# DIR1 : the candidate subdirectory
+# DIR2 : the candidate parent (or grandparent etc...) directory
+#
+function isSubdirOf
+{
+    if [ -z "$1" -o -z "$2" ]; then
+        exitWith 1 "Error: the function isSubdirOf requires 2 arguments."
+    fi
+
+    if [ ! -d "$(dirname "$1")" ]; then
+        exitWith 1 "Error: the parent dir of '$1' doesn't exist"
+    fi
+
+    if [ ! -d "$(dirname "$2")" ]; then
+        exitWith 1 "Error: the parent dir of '$2' doesn't exist"
+    fi
+
+    realDir1="$(readlink -f "$1")"
+    realDir2="$(readlink -f "$2")"
+
+    lengthMatched="$(expr match "$realDir1" "$realDir2")"
+
+    [ "$lengthMatched" -eq "${#realDir2}" ]
+}
+
+
+############################################################
+#
+# Chop off base directory from a given subdirectory
+#
+# stripBaseDir DIR BASEDIR
+#
+# DIR : a given subdirectory of a base directory
+# BASEDIR : the Cbase directory
+#
+function stripBaseDir
+{
+    if isSubdirOf "$1" "$2"; then
+        dir="$(readlink -f "$1")"
+        baseDir="$(readlink -f "$2")"
+        stripped=${dir:$(expr match "$dir" "$baseDir")}
+        stripped=${stripped%/}
+        stripped=${stripped#/}
+        echo $stripped
+    fi
+}
+
+
+############################################################
+#
+# Check if a given file is a text file.
+# Return 0 for true and 1 for false
+#
+# isTextFile FILE
+#
+function isTextFile
+{
+    [ "$(file --mime-type "$1" | cut -d':' -f 2 | cut -d'/' -f 1 | sed "s/^[[:space:]]*//g" | sed "s/[[:space:]]*$//g")" = "text" ]
+}
+
+
+############################################################
+#
+# Check if a given directory has no subdirectories
+# Return 0 for true and 1 for false
+#
+# isLeafDir DIR
+#
+function isLeafDir
+{
+    if [ -z "$1" ]; then
+        false
+
+    elif [ ! -d "$1" ]; then
+        false
+
+    elif [ "$(find "$1" -type d | wc -l)" != "1" ]; then
+        false
+
+    else
+        true
+
+    fi
+}
+
+
+############################################################
+#
+# Check if a given directory is empty
+# Return 0 for true and 1 for false
+#
+# isEmptyDir DIR
+#
+function isEmptyDir
+{
+    if [ -z "$1" ]; then
+        false
+
+    elif [ ! -d "$1" ]; then
+        false
+
+    elif [ "$(find "$1" | wc -l)" != "1" ]; then
+        false
+
+    else
+        true
+
+    fi
+}
+
+
+############################################################
+#
+# Check if a given executable is available.
+# Terminate the script when not.
+#
+# require EXEC
+#
+function require
+{
+    which "$1" > /dev/null 2>&1
+    exitOnError 1 "Required command: '$1' not found"
+}
+
+
+############################################################
+#
+# Print all 'require'd executables of a given script.
+# Descend recursively into 'require'd scripts.
+#
+# showReq SCRIPT
+#
+function showReq
+{
+    if [ -z "$1" ]; then
+        exitWith 1  "Error: 'showReq' requires an argument"
+    fi
+
+    function processRequirements
+    {
+        while read line; do
+            toolName="$(grep -o '\S\S*$' <<<$line)"
+            showReq_core "$toolName"
+        done < <(grep "^require\s\s*\S\S*\s*$" "$1")
+    }
+
+    function showReq_core
+    {
+        pathToCommand="$(which "$1")"
+        if [ "$?" -ne "0" ]; then
+            errcho "'$1' not found"
+        else
+            echo "$(basename "$pathToCommand")"
+            if isTextFile "$pathToCommand"; then
+                processRequirements "$pathToCommand"
+            fi
+        fi
+    }
+
+    processRequirements "$1"
+}
+
+
+############################################################
+#
+# Terminate the script when not root
+#
+# rootOnly [MESSAGE]
+#
+# MESSAGE : Optional custom message to print
+#           on stderr when exiting.
+#
+function rootOnly
+{
+    message="$1"
+    : ${message:="You must be root"}
+
+    if [ "$EUID" -ne 0 ]; then
+    exitWith 1 "$message"
+    fi
+}
+
+
+############################################################
+#
+# Print the script's help
+#
+function showHelp
+{
+    rgxbegin="^ *: *<< *DOCSTRING *$"
+    rgxend="^ *DOCSTRING *$"
+    printLine=false
+    IFS=''
+
+    while read line; do
+
+        if [[ "$line" =~ $rgxend ]]; then
+            printLine=false
+        fi
+
+        if $printLine; then
+            # eval is used to allow variable
+            # substitution in docstring
+            eval echo "\"$line\""
+        fi
+
+        if [[ "$line" =~ $rgxbegin ]]; then
+            printLine=true
+        fi
+
+    done < "$0"
+
+    exit 0
+}
+
+
+############################################################
+#
+# Print help if requested on command line
+#
+function checkForHelp
+{
+    if [ "$1" = "--help" ]; then
+        showHelp
+    fi
+}
+
+
+############################################################
+#
+# Try to acquire a lock. If the lock can't be acquired,
+# wait either indefinitely or for a specified number of
+# seconds.
+#
+# acquireLock LOCKNAME [TIMEOUT_SECONDS]
+#
+# LOCKNAME : the name of the lock
+# TIMEOUT_SECONDS : the amount of time to wait before
+#                   giving up. Can be 0 for immediate
+#                   return.
+#
+# Examples:
+#
+# Try to acquire a lock, and if not (yet) possible,
+# wait indefinitely for it:
+#
+#   acquireLock mylock
+#
+#
+# Try to acquire a lock, and if not (yet) possible,
+# give up immediately:
+#
+#   acquireLock mylock 0
+#
+#
+# Try to acquire a lock, and if not (yet) possible,
+# wait for 5 seconds before giving up:
+#
+#   acquireLock mylock 5
+#
+function acquireLock
+{
+    if [ -z "$1" ]; then
+        exitWith 1 "Error: $FUNCNAME() needs at least one argument."
+    fi
+
+    lockFile="/var/lock/$1"
+    exec {FD}>"$lockFile"
+    trap "flock -u $FD; flock -xn $FD && rm -f $lockFile" EXIT;
+
+    [[ -z "$2" ]] && waitArgs="" || waitArgs="-w $2 "
+    flock -x $waitArgs"$FD"
+}
+
+
+############################################################
+#
+# Allow only one instance of the script running at the time.
+# Exits the script immediately or wait indefinitely if another
+# instance is detected.
+#
+# Examples:
+#
+# Exits immediately if another instance detected:
+#
+#   oneInstance
+#
+#
+# Wait idnefinitely if another instance detected:
+#
+#   oneInstance block
+#
+function oneInstance
+{
+    lockName="$(basename "$0")"
+    [[ "$1" = "block" ]] && timeout="" || timeout="0"
+
+    acquireLock "$lockName" "$timeout"
+    exitOnError 1 "An instance of this script is already running."
+}
+
+
+############################################################
+#
+# Check if the command line has the minimum required number
+# of arguments.
+#
+# minNumArgs MIN ACTUAL
+#
+# MIN : the minimum required number of arguments
+# ACTUAL : The actual number of arguments
+#
+# Example:
+#
+# Exits with an error because 1 < 2
+#
+#   minNumArgs 2 1
+#
+function minNumArgs
+{
+    if [ "$2" -lt "$1" ]; then
+        errcho "$(basename "$0"): missing operand"
+        exitWith 1 "Try '$(basename "$0") --help' for more information."
+    fi
+}
+
+############################################################
+#
+# Helper function for elapsedTime. Echo WORD with an
+# additional 's' if VALUE differs from 1.
+#
+# makePlural WORD VALUE
+#
+function makePlural
+{
+    if [ "$2" != "1" ]; then
+        echo "$1s"
+    else
+        echo "$1"
+    fi
+}
+
+############################################################
+#
+# Echo the elapsed time between two given moments
+# in a human-readable format.
+#
+# elapsedTime START END [LONG]
+#
+# START : the start time in seconds
+# END : the end time in seconds
+# LONG : use the long format (the argument value can be anything)
+#
+# Examples:
+#
+# $ elapsedTime 10 1000
+# 16m 30s
+#
+# $ elapsedTime 10 1234567 L
+# 14 days 6 hours 55 minutes and 57 seconds
+#
+function elapsedTime
+{
+    if [ -z "$2" ]; then
+        exitWith 1 "Error: $FUNCNAME() needs at least two arguments."
+    fi
+
+    local T=$(expr $2 - $1)
+    local D=$((T/60/60/24))
+    local H=$((T/60/60%24))
+    local M=$((T/60%60))
+    local S=$((T%60))
+
+    if [ -n "$3" ]; then
+        local ds=" $(makePlural day "$D") "
+        local hs=" $(makePlural hour "$H") "
+        local ms=" $(makePlural minute "$M") "
+        local as="and "
+        local ss=" $(makePlural second "$S")"
+    else
+        local ds="d "
+        local hs="h "
+        local ms="m "
+        local as=""
+        local ss="s"
+    fi
+
+    (( $D > 0 )) && echo -n "$D$ds"
+    (( $H > 0 )) && echo -n "$H$hs"
+    (( $M > 0 )) && echo -n "$M$ms"
+    (( $D > 0 || $H > 0 || $M > 0 )) && echo -n "$as"
+
+    echo "$S$ss"
+}
+
+
+############################################################
+#
+# Look for all executable files in a directory tree and
+# call them one by one with the option '--help'.
+# In between the resulting output, markup is added in
+# the reStructuredText format.
+#
+# allHelp DIR
+#
+function allHelp
+{
+    while read fullname; do
+        name="$(basename "$fullname")"
+        echo $name
+        echo $name | tr [:print:] '-'
+        echo ::
+        echo
+        $fullname --help | sed "s/^/  /" | sed "s/[[:space:]]*$//"
+        echo
+    done < <(fnd $1 -executable ! -type d | sort)
+}

@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ -n "$1" ]; then
+
+    # Lose trailing slash, if any
+    dir="$(readlink -f "$1")"
+
+    # Check if $PATH doesn't contain ":$dir:"
+    if  [[ ":$PATH:" != *":$dir:"* ]] && [[ ":$PATH:" != *":$dir/:"* ]]; then
+
+        # Add $dir and all its subdirs to PATH,
+        # except for VC dirs
+        export PATH="$PATH:$(find -L "$dir" -type d ! -path "*/.git" ! -path "*/.git/*" ! -path "*/.hg" ! -path "*/.hg/*" ! -path "*/.svn" ! -path "*/.svn/*" ! -path "*/.bzr" ! -path "*/.bzr/*" ! -path "*/CVS" ! -path "*/CVS/*" | tr '\n' ':' | sed 's/:$//')"
+
+    fi
+
+fi
+

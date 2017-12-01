@@ -1,0 +1,66 @@
+#!/bin/bash
+
+. rabot-common
+if [ "$?" -ne "0" ]; then
+  echo "$0: Error while sourcing rabot-common" >&2
+  exit 1
+fi
+
+checkForHelp $1
+minNumArgs 1 $#
+
+: << DOCSTRING
+Usage: $(basename "$0") VARNAME
+
+'$(basename "$0")' collects some configuration settings of 'rabot'.
+
+It will output the value of the variable whose name is specified
+as a command-line argument.
+
+These values can be overridden outside '$(basename "$0")' by redefining
+the variable before calling this script. For example:
+
+    $ $(basename "$0") logDir
+    MyNormalLogDir
+    $ export logDir=MySpecialLogDir
+    $ $(basename "$0") logDir
+    MySpecialLogDir
+
+The value of the variables can also be changed permanently by editing
+'rabot-vars'.
+
+For a list of all variables defined by '$(basename "$0")' and
+their values, see the source code of the script.
+
+If you are a first-time user of rabot, you probably might want to edit
+this script to change the default values of some of the variables.
+DOCSTRING
+
+
+#
+# The directory containing the 'rabot' scripts
+#
+: ${rabotDir:="$(dirname "$0")"}
+
+
+#
+# The directory where logfiles produced by 'logop*' should be stored
+#
+: ${logDir:="$HOME/log"}
+
+
+#
+# The directory where .tgz files produced by 'bu-this' should be stored
+#
+: ${backupDir:="$HOME/backup"}
+
+
+#
+# The vim config file loaded when 'vim' is started by 'flon' or 'glon'
+#
+: ${vimNav:="$rabotDir/vimnav"}
+
+
+if [ -n "$1" ]; then
+    eval echo \$$1
+fi
