@@ -1,35 +1,3 @@
-Rabot
-=====
-
-.. contents::
-    :local:
-    :backlinks: none
-
-Introduction
-------------
-
-Rabot (an acronym for "**R**\ abot: **a** **b**\ unch **o**\ f **t**\ ools") is a collection of utility bash scripts.
-
-They can be installed simply by downloading them and adding the ``rabot`` directory to the ``PATH`` variable in your ``.bashrc`` file. There's a script called ``addtree2path`` in ``rabot`` to do just that.
-For example, if you add the following line to ``.bashrc``:
-
-::
-
-    . ~/tools/rabot/addtree2path ~/tools
-
-then the entire ``tools`` directory tree (including ``rabot``) gets added to the ``PATH`` variable.
-
-Every executable script in ``rabot`` has its own help function. You get the help by typing ``scriptname --help``. There are only a few non-executable scripts: ``addtree2path`` and a couple of scripts that are only meant to be used internally by other scripts.
-
-Most scripts fall into the following categories:
-
-* Easily create compressed, timestamped snapshots of your work-in-progress: ``bu-this``, ``clean-this``, ``tgz-files``, ``tgz-folder``, ``tgz-this``, ``zip-folder``, ``zip-this``. This can come in handy if you are collaborating with someone over email, or for little things where you think proper version control is too much hassle.
-* Save the output of console programs to logfiles: ``logop``, ``logopd``, ``logopf``.
-* Search through directory trees while ignoring the subdirectories created by version control software: ``fnd``, ``fnd0``, ``grp``.
-* Navigate through search results with ``vim`` and its ``quickfix`` window: ``flon``, ``glon``.
-
-The rest of this document consists of the ``--help`` output of the scripts.
-
 bu-this
 -------
 ::
@@ -92,7 +60,7 @@ docScripts
 
   'docScripts' prints the documentation of all executable files found in a given
   directory tree DIR or, by default, in the Current Working Directory (CWD).
-  First the contents of a file 'DIR/readme-part.rst' (if it exists) are printed to
+  First the contents of a file 'DIR/readme-preamble.rst' (if it exists) are printed to
   stdout. Then every executable file in DIR is called with the option '--help' and
   additional reStructuredText markup is added to the output.
 
@@ -100,8 +68,7 @@ docScripts
 
   Create a README file in reStructuredText format, documenting all scripts in the CWD:
 
-      docScripts . > README.rst
-
+      $ docScripts > README.rst
 
 encrypt
 -------
@@ -141,7 +108,7 @@ flon
 
   Example:
 
-      find . -type f | flon
+      $ find . -type f | flon
 
   This will open 'vim' and display the 'quickfix' window.
   The latter window will contain a list of every file in
@@ -240,7 +207,7 @@ glon
 
   Example:
 
-       grp rabot . | glon
+       $ grp rabot . | glon
 
   This makes use of the 'grep' wrapper script called 'grp'.
   Vim will be started and the quickfix window will be
@@ -480,7 +447,7 @@ pick1
   menu. When you select an item, 'pick1' prints
   the item on stdout and terminates.
 
-  When pressing Cancel 'pick1' terminates without
+  When pressing "Cancel" 'pick1' terminates without
   printing any output.
 
   With the optional argument TEXT you can put an explanatory
@@ -505,10 +472,10 @@ pickn
   'pickn' reads from stdin and after reaching EOF displays
   a dialog box with all lines read as selectable items.
   You can select or deselect every item individually.
-  When you press OK, 'pickn' prints a list of the selected
+  When you press "OK", 'pickn' prints a list of the selected
   items on stdout, one item per line, and terminates.
 
-  When pressing Cancel 'pickn' terminates without printing
+  When pressing "Cancel" 'pickn' terminates without printing
   any output.
 
   With the optional argument TEXT you can put an explanatory
@@ -528,7 +495,6 @@ pickn
   TODO: 'git add' example
 
   See also: 'pick1', 'lfiles'
-
 
 rabot-vars
 ----------
@@ -570,7 +536,7 @@ randid
 
   Example:
 
-      user@host ~ $ randid 5
+      $ randid 5
       mx2ft
 
 tgz-files
@@ -588,7 +554,7 @@ tgz-files
   directory.
 
   If a path starts with '~', the tilde will be
-  replaced with the value of $HOME (on this system: /home/bert)
+  replaced with the value of \/home/bert (on this system: /home/bert)
   before being passed to 'tar'.
 
   Inside the created .tgz file, all paths will be absolute, even
@@ -706,7 +672,6 @@ walkdir
       /home/user
       /home/user/mydir
       /home/user/myotherdir
-
 
 zip-folder
 ----------
