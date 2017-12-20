@@ -6,9 +6,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage: $(basename "$0") [TEXT] [STATUS]
 
 '$(basename "$0")' reads from stdin and after reaching EOF displays
@@ -37,8 +37,10 @@ Choose a couple of files in ~/log to remove:
 TODO: 'git add' example
 
 See also: 'pick1', 'lfiles'
-
 DOCSTRING
+}
+
+checkForHelp $1
 
 require dialog
 

@@ -6,14 +6,14 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage: $(basename "$0") [DIR]
 
 '$(basename "$0")' prints the documentation of all executable files found in a given
 directory tree DIR or, by default, in the Current Working Directory (CWD).
-First the contents of a file 'DIR/readme-part.rst' (if it exists) are printed to
+First the contents of a file 'DIR/readme-preamble.rst' (if it exists) are printed to
 stdout. Then every executable file in DIR is called with the option '--help' and
 additional reStructuredText markup is added to the output.
 
@@ -21,15 +21,17 @@ Example:
 
 Create a README file in reStructuredText format, documenting all scripts in the CWD:
 
-    docScripts . > README.rst
-
+    $ docScripts > README.rst
 DOCSTRING
+}
+
+checkForHelp $1
 
 directory=${1:-$PWD}
 cd $directory
 exitOnError 1 "The command 'cd $directory' returned an error"
 
-introFile="readme-part.rst"
+introFile="readme-preamble.rst"
 if [ -f "$introFile" ]; then
     cat "$introFile"
     echo

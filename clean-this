@@ -6,9 +6,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage: $(basename "$0")
 
 '$(basename "$0")' performs the following actions:
@@ -23,6 +23,9 @@ Usage: $(basename "$0")
 3. Look for a file named 'Makefile' in the CWD and
    - if found - run the command 'make clean'.
 DOCSTRING
+}
+
+checkForHelp $1
 
 # 1. Run the 'clean' script, if any
 if [ -x "./clean" ]; then

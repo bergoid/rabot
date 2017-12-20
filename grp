@@ -9,9 +9,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage: $(basename "$0") [OPTIONS] REGEX DIRECTORY
 
 '$(basename "$0")' wraps the 'grep' tool by adding the options: '-nrIP'.
@@ -26,6 +26,9 @@ colour.
 
 See also: 'fnd'
 DOCSTRING
+}
+
+checkForHelp $1
 
 require grep
 

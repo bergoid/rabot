@@ -6,9 +6,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage: $(basename "$0") [TEXT]
 
 '$(basename "$0")' reads from stdin and after reaching EOF
@@ -32,6 +32,9 @@ Choose one file in ~/log to view with 'less':
 
 See also: 'pickn', 'lfiles'
 DOCSTRING
+}
+
+checkForHelp $1
 
 require dialog
 

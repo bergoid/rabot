@@ -6,9 +6,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage: $(basename "$0") [LENGTH]
 
 '$(basename "$0")' prints a random alphanumerical string of
@@ -16,9 +16,12 @@ LENGTH characters (3 by default).
 
 Example:
 
-    user@host ~ $ randid 5
+    $ randid 5
     mx2ft
 DOCSTRING
+}
+
+checkForHelp $1
 
 idLength=${1:-3}
 if [ "$idLength" -gt "0" ]; then

@@ -6,10 +6,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-minNumArgs 2 $#
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage: $(basename "$0") FILELIST DESTDIR [PREFIX]
 
 '$(basename "$0")' reads the file FILELIST and creates a .tgz file
@@ -51,6 +50,10 @@ The command and its output look like this:
 
 See also: 'tgz-folder', 'tgz-this'
 DOCSTRING
+}
+
+checkForHelp $1
+minNumArgs 2 $#
 
 require timestamp-id
 

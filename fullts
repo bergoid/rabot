@@ -6,9 +6,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage: $(basename "$0") [FILE]
 
 '$(basename "$0")' displays the current time in the format:
@@ -17,6 +17,9 @@ the timestamp of FILE in this format.
 
 See also: 'timestamp-id'
 DOCSTRING
+}
+
+checkForHelp $1
 
 if [ -z "$1" ]; then
   date +%Y%m%d%H%M%S

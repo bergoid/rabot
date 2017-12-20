@@ -6,9 +6,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage: $(basename "$0")
 
 Compress the contents of the Current Working Directory (CWD)
@@ -29,6 +29,9 @@ Example:
 
 See also: 'tgz-folder', 'tgz-files'
 DOCSTRING
+}
+
+checkForHelp $1
 
 require clean-this
 require tgz-folder

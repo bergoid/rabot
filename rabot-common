@@ -266,45 +266,13 @@ function rootOnly
 
 ############################################################
 #
-# Print the script's help
-#
-function showHelp
-{
-    rgxbegin="^ *: *<< *DOCSTRING *$"
-    rgxend="^ *DOCSTRING *$"
-    printLine=false
-    IFS=''
-
-    while read line; do
-
-        if [[ "$line" =~ $rgxend ]]; then
-            printLine=false
-        fi
-
-        if $printLine; then
-            # eval is used to allow variable
-            # substitution in docstring
-            eval echo "\"$line\""
-        fi
-
-        if [[ "$line" =~ $rgxbegin ]]; then
-            printLine=true
-        fi
-
-    done < "$0"
-
-    exit 0
-}
-
-
-############################################################
-#
 # Print help if requested on command line
 #
 function checkForHelp
 {
     if [ "$1" = "--help" ]; then
         showHelp
+        exit 0
     fi
 }
 

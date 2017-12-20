@@ -6,10 +6,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-minNumArgs 1 $#
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage: $(basename "$0") DIR COMMAND [ARG1]...
 
 '$(basename "$0")' performs COMMAND with its arguments in
@@ -21,8 +20,11 @@ Example:
     /home/user
     /home/user/mydir
     /home/user/myotherdir
-
 DOCSTRING
+}
+
+checkForHelp $1
+minNumArgs 1 $#
 
 cd "$1"
 exitOnError 1 "walkdir : Could not 'cd' into $1"

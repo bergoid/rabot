@@ -6,9 +6,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage:
     first form:
         $(basename "$0") COMMAND [ARG1]...
@@ -74,6 +74,9 @@ A minimal sample of the second form:
 
 See also: 'logopd', 'logopf'
 DOCSTRING
+}
+
+checkForHelp $1
 
 require timestamp-id
 require rabot-vars

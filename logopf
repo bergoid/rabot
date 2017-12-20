@@ -10,9 +10,9 @@ if [ "$#" -lt 1 ]; then
   showHelp
 fi
 
-checkForHelp $1
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage:
     first form:
         $(basename "$0") FILE COMMAND [ARG1]...
@@ -60,6 +60,9 @@ A minimal sample of the second form:
 
 See also: 'logop', 'logopd'
 DOCSTRING
+}
+
+checkForHelp $1
 
 logFile="$1"
 shift

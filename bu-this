@@ -6,9 +6,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage: $(basename "$0")
 
 Summary: Compress the contents of the Current Working Directory (CWD)
@@ -26,6 +26,9 @@ Summary: Compress the contents of the Current Working Directory (CWD)
 
 See also: 'tgz-this', 'zip-this', 'clean-this'
 DOCSTRING
+}
+
+checkForHelp $1
 
 require tgz-this
 require rabot-vars

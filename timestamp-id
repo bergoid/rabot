@@ -6,9 +6,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage: $(basename "$0")
 
 '$(basename "$0")' will print the current time plus a
@@ -26,6 +26,9 @@ Example:
 
 See also: 'fullts', 'randid'
 DOCSTRING
+}
+
+checkForHelp $1
 
 require fullts
 require randid

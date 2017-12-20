@@ -6,10 +6,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-minNumArgs 2 $#
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage: $(basename "$0") FOLDER DESTDIR [PREFIX]
 
 '$(basename "$0")' compresses the directory FOLDER to a .tgz file and saves
@@ -34,6 +33,10 @@ Example:
 
 See also: 'tgz-files', 'tgz-this'
 DOCSTRING
+}
+
+checkForHelp $1
+minNumArgs 2 $#
 
 require timestamp-id
 require tar

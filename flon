@@ -6,9 +6,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage: FINDCOMMAND | $(basename "$0")
 
 '$(basename "$0")' takes the output of a 'find' command
@@ -30,7 +30,7 @@ started with 'errorformat' equal to '%f'.
 
 Example:
 
-    find . -type f | flon
+    $ find . -type f | flon
 
 This will open 'vim' and display the 'quickfix' window.
 The latter window will contain a list of every file in
@@ -38,6 +38,9 @@ the current working directory and all its subdirectories.
 
 See also: 'glon'
 DOCSTRING
+}
+
+checkForHelp $1
 
 require vim
 

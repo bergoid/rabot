@@ -6,9 +6,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage: GREPCOMMAND | $(basename "$0")
 
 '$(basename "$0")' takes the output of a 'grep' command
@@ -37,7 +37,7 @@ be used in order to produce this format.
 
 Example:
 
-     grp rabot . | glon
+     $ grp rabot . | glon
 
 This makes use of the 'grep' wrapper script called 'grp'.
 Vim will be started and the quickfix window will be
@@ -47,6 +47,9 @@ directory and its subdirectories.
 
 See also: 'flon'
 DOCSTRING
+}
+
+checkForHelp $1
 
 require vim
 

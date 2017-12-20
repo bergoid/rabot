@@ -6,10 +6,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-minNumArgs 1 $#
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage: $(basename "$0") INFILE [OUTFILE]
 
 '$(basename "$0")' decrypts INFILE with the aes-256-cbc
@@ -21,6 +20,10 @@ You will be prompted for a password.
 
 See also: 'encrypt'
 DOCSTRING
+}
+
+checkForHelp $1
+minNumArgs 1 $#
 
 inFile="$1"
 

@@ -6,9 +6,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage:
     first form:
         $(basename "$0") DIR COMMAND [ARG1]...
@@ -58,6 +58,9 @@ A minimal sample of the second form:
 
 See also: 'logop', 'logopf'
 DOCSTRING
+}
+
+checkForHelp $1
 
 require logop
 

@@ -6,10 +6,9 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-checkForHelp $1
-minNumArgs 1 $#
-
-: << DOCSTRING
+function showHelp
+{
+cat << DOCSTRING
 Usage: $(basename "$0") FILENAME [OUTFILE]
 
 '$(basename "$0")' encrypts FILENAME with the aes-256-cbc
@@ -19,6 +18,10 @@ You will be prompted twice for a password.
 
 See also: 'decrypt'
 DOCSTRING
+}
+
+checkForHelp $1
+minNumArgs 1 $#
 
 if [ ! -f "$1" ]; then
     exitWith 1 "Error: '$1' not found."
