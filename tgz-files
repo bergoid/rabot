@@ -79,7 +79,7 @@ destFile="$destDir/$prefix$tsid.tgz"
 #cd
 
 homedir_escaped="$(sed 's/\//\\\//g' <<<"$HOME")"
-cat "$fileList" | sed "s/^~/$homedir_escaped/g" | xargs -I{} readlink -f "{}" | xargs tar cpvz -P -C / -f $destFile
+cat "$fileList" | sed "s/^~/$homedir_escaped/g" | xargs -I{} readlink -f "{}" | xargs -r tar cpvz -P -C / -f $destFile
 exitOnError 1 "while creating tarball: \"$destFile\" from file list: \"$fileList\""
 
 echo "$(readlink -f "$destFile")"

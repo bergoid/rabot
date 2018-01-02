@@ -491,7 +491,7 @@ pick1
 
   Choose one file in ~/log to view with 'less':
 
-      $ lfiles ~/log | pick1 | xargs less
+      $ lfiles ~/log | pick1 | xargs -r less
 
   See also: 'pickn', 'lfiles'
 
@@ -522,7 +522,7 @@ pickn
 
   Choose a couple of files in ~/log to remove:
 
-      $ lfiles ~/log | pickn | xargs rm
+      $ lfiles ~/log | pickn | xargs -r rm
 
   TODO: 'git add' example
 
@@ -571,6 +571,35 @@ randid
       $ randid 5
       mx2ft
 
+tgzdir
+------
+::
+
+  Usage: tgzdir [DIR] [DESTDIR] [PREFIX]
+
+  'tgzdir' compresses the directory DIR to a .tgz file and saves
+  the latter in the directory DESTDIR.
+
+  The filename has the following pattern:
+
+      'NAME_YYYMMDDhhmmss_RND.tgz'
+
+  where 'NAME' is either equal to the name of 'FOLDER' or to 'PREFIX' if the
+  latter argument is given, 'YYYMMDDhhmmss' is the current datetime and 'RND'
+  is a 3-character random alphanumerical string.
+
+  If omitted, DESTDIR will be the parent directory of DIR. If DIR is omitted
+  too, the current working directory is taken as DIR.
+
+  Paths inside the .tgz file will be relative to DIR's parent directory.
+
+  Example:
+
+      user@host ~ $ tgzdir somedir/mydir .
+      /home/user/mydir_20140522224809_m94.tgz
+
+  See also: 'zipdir', 'tgzfiles'
+
 tgz-files
 ---------
 ::
@@ -616,58 +645,6 @@ tgz-files
 
   See also: 'tgz-folder', 'tgz-this'
 
-tgz-folder
-----------
-::
-
-  Usage: tgz-folder FOLDER DESTDIR [PREFIX]
-
-  'tgz-folder' compresses the directory FOLDER to a .tgz file and saves
-  the latter in the directory DESTDIR.
-
-  The filename has the following pattern:
-
-      'NAME_YYYMMDDhhmmss_RND.tgz'
-
-  where 'NAME' is either equal to the name of 'FOLDER' or to 'PREFIX' if the
-  latter argument is given, 'YYYMMDDhhmmss' is the current datetime and 'RND'
-  is a 3-character random alphanumerical string.
-
-  The directory DESTDIR will be created if it does not exist.
-
-  Paths inside the .tgz file will be relative to the current working directory.
-
-  Example:
-
-      user@host ~ $ tgz-folder somedir/myfolder .
-      /home/user/myfolder_20140522224511_fw0.tgz
-
-  See also: 'tgz-files', 'tgz-this'
-
-tgz-this
---------
-::
-
-  Usage: tgz-this
-
-  Compress the contents of the Current Working Directory (CWD)
-  to a .tgz file stored in its parent directory.
-
-  'tgz-this' performs the following actions:
-
-  1. Remove temporary files from the CWD by running the script
-     'clean-this'.
-
-  2. 'cd' into the parent directory of the CWD and run
-     the script 'tgz-folder' on the former CWD.
-
-  Example:
-
-      user@host ~/myfolder $ tgz-this
-      /home/user/myfolder_20140522221601_5ve.tgz
-
-  See also: 'tgz-folder', 'tgz-files'
-
 timestamp-id
 ------------
 ::
@@ -705,13 +682,13 @@ walkdir
       /home/user/mydir
       /home/user/myotherdir
 
-zip-folder
-----------
+zipdir
+------
 ::
 
-  Usage: zip-folder FOLDER DESTDIR [PREFIX]
+  Usage: zipdir [DIR] [DESTDIR] [PREFIX]
 
-  'zip-folder' compresses the directory FOLDER to a .zip file and saves
+  'zipdir' compresses the directory DIR to a .zip file and saves
   the latter in the directory DESTDIR.
 
   The filename has the following pattern:
@@ -722,38 +699,15 @@ zip-folder
   latter argument is given, 'YYYMMDDhhmmss' is the current datetime and 'RND'
   is a 3-character random alphanumerical string.
 
-  The directory DESTDIR will be created if it does not exist.
+  If omitted, DESTDIR will be the parent directory of DIR. If DIR is omitted
+  too, the current working directory is taken as DIR.
 
-  Paths inside the .zip file will be relative to the current working directory.
-
-  Example:
-
-      user@host ~ $ zip-folder somedir/myfolder .
-      /home/user/myfolder_20140522224809_m94.zip
-
-  See also: 'zip-this', 'tgz-folder', 'tgz-this'
-
-zip-this
---------
-::
-
-  Usage: zip-this
-
-  Compress the contents of the Current Working Directory (CWD)
-  to a .zip file stored in its parent directory.
-
-  'zip-this' performs the following actions:
-
-  1. Remove temporary files from the CWD by running the script
-     'clean-this'.
-
-  2. 'cd' into the parent directory of the CWD and run
-     the script 'zip-folder' on the former CWD.
+  Paths inside the .zip file will be relative to DIR's parent directory.
 
   Example:
 
-      user@host ~/myfolder $ zip-this
-      /home/user/myfolder_20140522225226_0fg.zip
+      user@host ~ $ zipdir somedir/mydir .
+      /home/user/mydir_20140522224809_m94.zip
 
-  See also: 'zip-folder', 'tgz-this'
+  See also: 'tgzdir', 'tgzfiles'
 

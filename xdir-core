@@ -1,0 +1,32 @@
+#!/bin/bash
+
+srcDir=$(readlink -f ${1:-$PWD})
+destDir=$(readlink -f ${2:-$(dirname $(readlink -f $srcDir))})
+
+if [ "$srcDir" == "$destDir" ]; then
+    exitWith 1 "Error: the source and destination directories are equal: '$srcDir'"
+fi
+
+if [ ! -d "$srcDir" ]; then
+    exitWith 1 "Error: the folder '$srcDir' doesn't exist"
+fi
+
+if [ ! -d "$destDir" ]; then
+    exitWith 1 "Error: the destination folder '$destDir' doesn't exist"
+fi
+
+if [ ! -w "$destDir" ]; then
+    exitWith 1 "Error: the destination folder '$destDir' isn't writable"
+fi
+
+tsid="$(timestamp-id)"
+exitOnError 1 "The script 'timestamp-id' returned an error."
+
+srcDirName=$(basename "$srcDir")
+srcDirParent=$(dirname "$srcDir")
+prefix="${3:-$srcDirName}"
+
+exitOnError 1 "Could not set the prefix."
+
+cd "$srcDirParent"
+exitOnError 1 "Could not 'cd' into '$srcDirParent'"

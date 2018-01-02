@@ -1,0 +1,50 @@
+#!/bin/bash
+
+. rabot-common
+if [ "$?" -ne "0" ]; then
+  echo "$0: Error while sourcing rabot-common" >&2
+  exit 1
+fi
+
+function showHelp
+{
+cat << DOCSTRING
+Usage: $(basename "$0") [DIR] [DESTDIR] [PREFIX]
+
+'$(basename "$0")' compresses the directory DIR to a .zip file and saves
+the latter in the directory DESTDIR.
+
+The filename has the following pattern:
+
+    'NAME_YYYMMDDhhmmss_RND.zip'
+
+where 'NAME' is either equal to the name of 'FOLDER' or to 'PREFIX' if the
+latter argument is given, 'YYYMMDDhhmmss' is the current datetime and 'RND'
+is a 3-character random alphanumerical string.
+
+If omitted, DESTDIR will be the parent directory of DIR. If DIR is omitted
+too, the current working directory is taken as DIR.
+
+Paths inside the .zip file will be relative to DIR's parent directory.
+
+Example:
+
+    user@host ~ $ zipdir somedir/mydir .
+    /home/user/mydir_20140522224809_m94.zip
+
+See also: 'tgzdir', 'tgzfiles'
+DOCSTRING
+}
+
+checkForHelp $1
+
+require timestamp-id
+require zip
+
+. xdir-core
+
+destFile="${destDir:-.}/${prefix}_$tsid.zip"
+zip -rq "$destFile" "$srcDirName"
+exitOnError 1 "The command 'zip -rq $destFile $srcDirName' returned an error"
+
+echo "$(readlink -f "$destFile")"

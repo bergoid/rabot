@@ -32,7 +32,7 @@ Examples:
 
 Choose a couple of files in ~/log to remove:
 
-    $ lfiles ~/log | pickn | xargs rm
+    $ lfiles ~/log | pickn | xargs -r rm
 
 TODO: 'git add' example
 

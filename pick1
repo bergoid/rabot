@@ -28,7 +28,7 @@ Examples:
 
 Choose one file in ~/log to view with 'less':
 
-    $ lfiles ~/log | pick1 | xargs less
+    $ lfiles ~/log | pick1 | xargs -r less
 
 See also: 'pickn', 'lfiles'
 DOCSTRING
