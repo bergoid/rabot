@@ -43,12 +43,12 @@ With a file 'filelist.txt' containing the following two lines:
     two.txt
 
 The command and its output look like this:
-    user@host ~ $ tgz-files filelist.txt .
+    user@host ~ $ tgzfiles filelist.txt .
     /home/user/one.txt
     /home/user/two.txt
     /home/user/20140519142819_5sp.tgz
 
-See also: 'tgz-folder', 'tgz-this'
+See also: 'tgzdir'
 DOCSTRING
 }
 

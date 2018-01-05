@@ -53,7 +53,7 @@ minNumArgs 1 $#
 
 
 #
-# The directory where .tgz files produced by 'bu-this' should be stored
+# The directory where .tgz files produced by 'budir' should be stored
 #
 : ${backupDir:="$HOME/backup"}
 

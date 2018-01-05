@@ -23,51 +23,53 @@ Every executable script in ``rabot`` has its own help function. You get the help
 
 Most scripts fall into the following categories:
 
-* Easily create compressed, timestamped snapshots of your work-in-progress: ``bu-this``, ``clean-this``, ``tgz-files``, ``tgz-folder``, ``tgz-this``, ``zip-folder``, ``zip-this``. This can come in handy if you are collaborating with someone over email, or for little things where you think proper version control is too much hassle.
+* Easily create compressed, timestamped snapshots of your work-in-progress: ``budir``, ``cleandir``, ``tgzfiles``, ``tgzdir``, ``zipdir``. This can come in handy if you are collaborating with someone over email, or for little things where you think proper version control is too much hassle.
 * Save the output of console programs to logfiles: ``logop``, ``logopd``, ``logopf``.
 * Search through directory trees while ignoring the subdirectories created by version control software: ``fnd``, ``fnd0``, ``grp``.
 * Navigate through search results with ``vim`` and its ``quickfix`` window: ``flon``, ``glon``.
 
 The rest of this document consists of the ``--help`` output of the scripts.
 
-bu-this
--------
+budir
+-----
 ::
 
-  Usage: bu-this
+  Usage: budir [DIR]
 
-  Summary: Compress the contents of the Current Working Directory (CWD)
-           into a .tgz file saved in a dedicated backup directory.
+  Summary: Compress the contents of a directory into a .tgz file
+           saved in a dedicated backup directory.
 
-  'bu-this' performs the following actions:
+  'budir' performs the following actions:
 
   1. Obtain the path to the destination directory by invoking 'rabot-vars backupDir'
      and create this directory if it doesn't already exist.
 
-  2. Run the script 'tgz-this' to compress the contents of the CWD into a .tgz file
-     located in the parent directory of the CWD.
+  2. Run the script 'tgzdir' to compress the contents of DIR into a .tgz file
+     located in the destination directory. If DIR is omitted, the current working
+     directory is used as DIR.
 
-  3. 'mv' this .tgz file to the destination directory.
+  See also: 'tgzdir', 'zipdir', 'cleandir'
 
-  See also: 'tgz-this', 'zip-this', 'clean-this'
-
-clean-this
-----------
+cleandir
+--------
 ::
 
-  Usage: clean-this
+  Usage: cleandir [DIR]
 
-  'clean-this' performs the following actions:
+  'cleandir' performs the following actions:
 
-  1. Look for an executable file named 'clean' in the
-     Current Working Directory (CWD) and run it, if found.
+  1. If DIR is omitted, use the current working diretory
+     as DIR.
 
-  2. Look for a file named 'clean.txt' in the CWD and
-     - if found - delete all files and directories named in
+  2. Look for an executable file named 'clean' in DIR
+     and run it, if found.
+
+  3. Look for a file named 'clean.txt' in DIR and - if
+     found - delete all files and directories named in
      this file.
 
-  3. Look for a file named 'Makefile' in the CWD and
-     - if found - run the command 'make clean'.
+  4. Look for a file named 'Makefile' in DIR and - if
+     found - run the command 'make clean'.
 
 decrypt
 -------
@@ -615,13 +617,13 @@ tgzdir
 
   See also: 'zipdir', 'tgzfiles'
 
-tgz-files
----------
+tgzfiles
+--------
 ::
 
-  Usage: tgz-files FILELIST DESTDIR [PREFIX]
+  Usage: tgzfiles FILELIST DESTDIR [PREFIX]
 
-  'tgz-files' reads the file FILELIST and creates a .tgz file
+  'tgzfiles' reads the file FILELIST and creates a .tgz file
   (with the command 'tar') containing all files and directories
   listed in FILELIST.
 
@@ -653,12 +655,12 @@ tgz-files
       two.txt
 
   The command and its output look like this:
-      user@host ~ $ tgz-files filelist.txt .
+      user@host ~ $ tgzfiles filelist.txt .
       /home/user/one.txt
       /home/user/two.txt
       /home/user/20140519142819_5sp.tgz
 
-  See also: 'tgz-folder', 'tgz-this'
+  See also: 'tgzdir'
 
 timestamp-id
 ------------

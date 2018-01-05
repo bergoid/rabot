@@ -6,45 +6,14 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
-function showHelp
-{
-cat << DOCSTRING
-Usage: $(basename "$0") [DIR] [DESTDIR] [PREFIX]
-
-'$(basename "$0")' compresses the directory DIR to a .tgz file and saves
-the latter in the directory DESTDIR.
-
-The filename has the following pattern:
-
-    'NAME_YYYMMDDhhmmss_RND.tgz'
-
-where 'NAME' is either equal to the name of 'FOLDER' or to 'PREFIX' if the
-latter argument is given, 'YYYMMDDhhmmss' is the current datetime and 'RND'
-is a 3-character random alphanumerical string.
-
-If omitted, DESTDIR will be the parent directory of DIR. If DIR is omitted
-too, the current working directory is taken as DIR.
-
-Paths inside the .tgz file will be relative to DIR's parent directory.
-
-Example:
-
-    user@host ~ $ tgzdir somedir/mydir .
-    /home/user/mydir_20140522224809_m94.tgz
-
-See also: 'zipdir', 'tgzfiles'
-DOCSTRING
-}
-
-checkForHelp $1
-
-require timestamp-id
 require tar
+
+xdir_this=tgz
+xdir_other=zip
 
 . xdir-core
 
-destFile="${destDir:-.}/${prefix}_$tsid.tgz"
-tar -cpzf "$destFile" "$srcDirName"
+tar -cpzf "$destFile" "$srcDirRelative"
 exitOnError 1 "The command 'tar -cpzf $destFile $srcDirName' returned an error"
 
-echo "$(readlink -f "$destFile")"
+readlink -f "$destFile"

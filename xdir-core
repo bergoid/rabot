@@ -1,32 +1,91 @@
 #!/bin/bash
 
-srcDir=$(readlink -f ${1:-$PWD})
-destDir=$(readlink -f ${2:-$(dirname $(readlink -f $srcDir))})
+function showHelp
+{
+cat << DOCSTRING
+Usage: $(basename "$0") [DIR] [DESTDIR] [PREFIX] [ROOTDIR]
+
+'$(basename "$0")' compresses the directory DIR to a .$xdir_this file and saves
+the latter in the directory DESTDIR.
+
+The filename has the following pattern:
+
+    'NAME_YYYMMDDhhmmss_RND.$xdir_this'
+
+where 'NAME' is either equal to the name of 'DIR' or to 'PREFIX' if the
+latter argument is given, 'YYYMMDDhhmmss' is the current datetime and 'RND'
+is a 3-character random alphanumerical string.
+
+If omitted, DESTDIR will be the parent directory of DIR. If DIR is omitted
+too, the current working directory is taken as DIR.
+
+Paths inside the .$xdir_this file will be relative to DIR's parent directory,
+unless you specify ROOTDIR, then they will be relative to ROOTDIR. DIR must
+be a subdirectory of ROOTDIR though. If you want to specify ROOTDIR but not
+PREFIX you can use '_' (underscore) as value for PREFIX.
+
+Examples:
+
+Compress the current working directory and put the file in the parent
+directory:
+
+    user@host ~/projects/myprj $ ${xdir_this}dir
+    /home/user/projects/myprj_20180103163250_o5c.$xdir_this
+
+Compress the directory '~/somedir/mydir' and put the file in the current
+working directory:
+
+    user@host ~ $ ${xdir_this}dir somedir/mydir .
+    /home/user/mydir_20180103162834_tyh.$xdir_this
+
+See also: '${xdir_other}dir', 'tgzfiles'
+DOCSTRING
+}
+
+checkForHelp $1
+
+require timestamp-id
+
+srcDir=${1:-$PWD}
+
+if [ ! -d "$srcDir" ]; then
+    exitWith 1 "Error: the source directory '$srcDir' doesn't exist"
+fi
+
+srcDir=$(readlink -f $srcDir)
+destDir=${2:-$(dirname $srcDir)}
+
+if [ ! -d "$destDir" ]; then
+    exitWith 1 "Error: the destination directory '$destDir' doesn't exist"
+fi
+
+destDir=$(readlink -f $destDir)
 
 if [ "$srcDir" == "$destDir" ]; then
     exitWith 1 "Error: the source and destination directories are equal: '$srcDir'"
 fi
 
-if [ ! -d "$srcDir" ]; then
-    exitWith 1 "Error: the folder '$srcDir' doesn't exist"
-fi
-
-if [ ! -d "$destDir" ]; then
-    exitWith 1 "Error: the destination folder '$destDir' doesn't exist"
-fi
-
 if [ ! -w "$destDir" ]; then
-    exitWith 1 "Error: the destination folder '$destDir' isn't writable"
+    exitWith 1 "Error: the destination directory '$destDir' isn't writable"
 fi
 
 tsid="$(timestamp-id)"
 exitOnError 1 "The script 'timestamp-id' returned an error."
 
 srcDirName=$(basename "$srcDir")
-srcDirParent=$(dirname "$srcDir")
 prefix="${3:-$srcDirName}"
+if [ "$prefix" == "_" ]; then
+    prefix="$srcDirName"
+fi
 
-exitOnError 1 "Could not set the prefix."
+srcDirParent=$(dirname "$srcDir")
+rootDir="${4:-$srcDirParent}"
+if ! isSubdirOf "$srcDir" "$rootDir"; then
+    exitWith 1 "Error: '$srcDir' is not a subdirectory of '$rootDir'"
+fi
 
-cd "$srcDirParent"
-exitOnError 1 "Could not 'cd' into '$srcDirParent'"
+cd "$rootDir"
+exitOnError 1 "Could not 'cd' into '$rootDir'"
+
+srcDirRelative=$(stripBaseDir "$srcDir" "$rootDir")
+destFile="${destDir:-.}/${prefix}_$tsid.$xdir_this"

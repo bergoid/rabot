@@ -1,0 +1,55 @@
+#!/bin/bash
+
+. rabot-common
+if [ "$?" -ne "0" ]; then
+  echo "$0: Error while sourcing rabot-common" >&2
+  exit 1
+fi
+
+function showHelp
+{
+cat << DOCSTRING
+Usage: $(basename "$0") [DIR]
+
+'$(basename "$0")' performs the following actions:
+
+1. If DIR is omitted, use the current working diretory
+   as DIR.
+
+2. Look for an executable file named 'clean' in DIR
+   and run it, if found.
+
+3. Look for a file named 'clean.txt' in DIR and - if
+   found - delete all files and directories named in
+   this file.
+
+4. Look for a file named 'Makefile' in DIR and - if
+   found - run the command 'make clean'.
+DOCSTRING
+}
+
+checkForHelp $1
+
+# 1. cd into DIRi (or PWD)
+srcDir=${1:-$PWD}
+
+if [ ! -d "$srcDir" ]; then
+    exitWith 1 "Error: the source directory '$srcDir' doesn't exist"
+fi
+
+cd "$srcDir"
+
+# 2. Run the 'clean' script, if any
+if [ -x "./clean" ]; then
+    ./clean
+fi
+
+# 3. Delete files named in 'clean.txt', if any
+if [ -f "./clean.txt" ]; then
+    cat clean.txt | xargs -r -I{} bash -c "rm -rf ./{}"
+fi
+
+# 4. Build the 'clean' target of 'Makefile', if any
+if [ -f "Makefile" ]; then
+    make clean
+fi
