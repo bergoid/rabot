@@ -24,7 +24,7 @@ text in the dialog. The default is the empty string.
 
 This script depends on the command-line tool 'dialog'.
 
-Examples:
+Example:
 
 Choose one file in ~/log to view with 'less':
 

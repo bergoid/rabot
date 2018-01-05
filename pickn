@@ -34,7 +34,10 @@ Choose a couple of files in ~/log to remove:
 
     $ lfiles ~/log | pickn | xargs -r rm
 
-TODO: 'git add' example
+In a git working directory, stage some of the modified files
+for the next commit:
+
+    $ git diff --name-only | pickn | xr git add
 
 See also: 'pick1', 'lfiles'
 DOCSTRING

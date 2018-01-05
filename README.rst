@@ -487,7 +487,7 @@ pick1
 
   This script depends on the command-line tool 'dialog'.
 
-  Examples:
+  Example:
 
   Choose one file in ~/log to view with 'less':
 
@@ -524,7 +524,10 @@ pickn
 
       $ lfiles ~/log | pickn | xargs -r rm
 
-  TODO: 'git add' example
+  In a git working directory, stage some of the modified files
+  for the next commit:
+
+      $ git diff --name-only | pickn | xr git add
 
   See also: 'pick1', 'lfiles'
 
@@ -575,7 +578,7 @@ tgzdir
 ------
 ::
 
-  Usage: tgzdir [DIR] [DESTDIR] [PREFIX]
+  Usage: tgzdir [DIR] [DESTDIR] [PREFIX] [ROOTDIR]
 
   'tgzdir' compresses the directory DIR to a .tgz file and saves
   the latter in the directory DESTDIR.
@@ -584,19 +587,31 @@ tgzdir
 
       'NAME_YYYMMDDhhmmss_RND.tgz'
 
-  where 'NAME' is either equal to the name of 'FOLDER' or to 'PREFIX' if the
+  where 'NAME' is either equal to the name of 'DIR' or to 'PREFIX' if the
   latter argument is given, 'YYYMMDDhhmmss' is the current datetime and 'RND'
   is a 3-character random alphanumerical string.
 
   If omitted, DESTDIR will be the parent directory of DIR. If DIR is omitted
   too, the current working directory is taken as DIR.
 
-  Paths inside the .tgz file will be relative to DIR's parent directory.
+  Paths inside the .tgz file will be relative to DIR's parent directory,
+  unless you specify ROOTDIR, then they will be relative to ROOTDIR. DIR must
+  be a subdirectory of ROOTDIR though. If you want to specify ROOTDIR but not
+  PREFIX you can use '_' (underscore) as value for PREFIX.
 
-  Example:
+  Examples:
+
+  Compress the current working directory and put the file in the parent
+  directory:
+
+      user@host ~/projects/myprj $ tgzdir
+      /home/user/projects/myprj_20180103163250_o5c.tgz
+
+  Compress the directory '~/somedir/mydir' and put the file in the current
+  working directory:
 
       user@host ~ $ tgzdir somedir/mydir .
-      /home/user/mydir_20140522224809_m94.tgz
+      /home/user/mydir_20180103162834_tyh.tgz
 
   See also: 'zipdir', 'tgzfiles'
 
@@ -686,7 +701,7 @@ zipdir
 ------
 ::
 
-  Usage: zipdir [DIR] [DESTDIR] [PREFIX]
+  Usage: zipdir [DIR] [DESTDIR] [PREFIX] [ROOTDIR]
 
   'zipdir' compresses the directory DIR to a .zip file and saves
   the latter in the directory DESTDIR.
@@ -695,19 +710,31 @@ zipdir
 
       'NAME_YYYMMDDhhmmss_RND.zip'
 
-  where 'NAME' is either equal to the name of 'FOLDER' or to 'PREFIX' if the
+  where 'NAME' is either equal to the name of 'DIR' or to 'PREFIX' if the
   latter argument is given, 'YYYMMDDhhmmss' is the current datetime and 'RND'
   is a 3-character random alphanumerical string.
 
   If omitted, DESTDIR will be the parent directory of DIR. If DIR is omitted
   too, the current working directory is taken as DIR.
 
-  Paths inside the .zip file will be relative to DIR's parent directory.
+  Paths inside the .zip file will be relative to DIR's parent directory,
+  unless you specify ROOTDIR, then they will be relative to ROOTDIR. DIR must
+  be a subdirectory of ROOTDIR though. If you want to specify ROOTDIR but not
+  PREFIX you can use '_' (underscore) as value for PREFIX.
 
-  Example:
+  Examples:
+
+  Compress the current working directory and put the file in the parent
+  directory:
+
+      user@host ~/projects/myprj $ zipdir
+      /home/user/projects/myprj_20180103163250_o5c.zip
+
+  Compress the directory '~/somedir/mydir' and put the file in the current
+  working directory:
 
       user@host ~ $ zipdir somedir/mydir .
-      /home/user/mydir_20140522224809_m94.zip
+      /home/user/mydir_20180103162834_tyh.zip
 
   See also: 'tgzdir', 'tgzfiles'
 
