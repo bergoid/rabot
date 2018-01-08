@@ -11,6 +11,8 @@ function showHelp
 cat << DOCSTRING
 Usage: $(basename "$0") [DIR]
 
+Clean up intermediate files in a directory
+
 '$(basename "$0")' performs the following actions:
 
 1. If DIR is omitted, use the current working diretory

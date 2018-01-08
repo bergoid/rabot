@@ -56,6 +56,8 @@ cleandir
 
   Usage: cleandir [DIR]
 
+  Clean up intermediate files in a directory
+
   'cleandir' performs the following actions:
 
   1. If DIR is omitted, use the current working diretory
