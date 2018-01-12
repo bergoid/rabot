@@ -11,7 +11,7 @@ require zip
 xdir_this=zip
 xdir_other=tgz
 
-. xdir-core
+. xdir
 
 zip -rq "$destFile" "$srcDirRelative"
 exitOnError 1 "The command 'zip -rq $destFile $srcDirName' returned an error"

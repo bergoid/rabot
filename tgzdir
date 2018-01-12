@@ -11,7 +11,7 @@ require tar
 xdir_this=tgz
 xdir_other=zip
 
-. xdir-core
+. xdir
 
 tar -cpzf "$destFile" "$srcDirRelative"
 exitOnError 1 "The command 'tar -cpzf $destFile $srcDirName' returned an error"

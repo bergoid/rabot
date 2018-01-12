@@ -67,6 +67,6 @@ checkForHelp $1
 logFile="$1"
 shift
 
-. logop-core $* 2>&1 > >(tee -a "$logFile")
+. logopx $* 2>&1 > >(tee -a "$logFile")
 
 exit $logopExitStatus
