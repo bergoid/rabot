@@ -13,9 +13,10 @@ Usage: $(basename "$0") [DIR]
 
 '$(basename "$0")' prints the documentation of all executable files found in a given
 directory tree DIR or, by default, in the Current Working Directory (CWD).
-First the contents of a file 'DIR/readme-preamble.rst' (if it exists) are printed to
+First the contents of a file 'DIR/readme-head.rst' (if it exists) are printed to
 stdout. Then every executable file in DIR is called with the option '--help' and
-additional reStructuredText markup is added to the output.
+additional reStructuredText markup is added to the output. Finally, the contents of
+a file 'DIR/readme-tail.rst' (if it exists) are printed to stdout.
 
 Example:
 
@@ -31,9 +32,16 @@ directory=${1:-$PWD}
 cd $directory
 exitOnError 1 "The command 'cd $directory' returned an error"
 
-introFile="readme-preamble.rst"
-if [ -f "$introFile" ]; then
-    cat "$introFile"
+headFile="readme-head.rst"
+if [ -f "$headFile" ]; then
+    cat "$headFile"
     echo
 fi
+
 allHelp .
+
+tailFile="readme-tail.rst"
+if [ -f "$tailFile" ]; then
+    cat "$tailFile"
+    echo
+fi
