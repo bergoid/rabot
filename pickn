@@ -26,6 +26,9 @@ text in the dialog. The default is the empty string.
 STATUS determines the initial state of the items. 'off' for
 deselected and 'on' for selected. Default is 'off'.
 
+No dialog is shown and no output is printed when the input is
+empty.
+
 This script depends on the command-line tool 'dialog'.
 
 Examples:
@@ -56,6 +59,8 @@ while read line; do
     items="$items $i \"$line\" $status"
     i=$(expr $i + 1)
 done
+
+[ $i -eq 0 ] && exit 0
 
 tags=$(bash -c "dialog --keep-tite --no-tags --title \"pickn\" --checklist \"$text\" 0 0 0 $items 3>&1 1>&2 2>&3 3>&-")
 

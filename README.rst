@@ -458,6 +458,9 @@ pick1
   With the optional argument TEXT you can put an explanatory
   text in the dialog. The default is the empty string.
 
+  No dialog is shown and no output is printed when the input is
+  empty.
+
   This script depends on the command-line tool 'dialog'.
 
   Example:
@@ -488,6 +491,9 @@ pickn
 
   STATUS determines the initial state of the items. 'off' for
   deselected and 'on' for selected. Default is 'off'.
+
+  No dialog is shown and no output is printed when the input is
+  empty.
 
   This script depends on the command-line tool 'dialog'.
 
