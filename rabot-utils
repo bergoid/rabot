@@ -315,7 +315,7 @@ function acquireLock
         exitWith 1 "Error: $FUNCNAME() needs at least one argument."
     fi
 
-    lockFile="/var/lock/$1"
+    lockFile="/tmp/$1"
     exec {FD}>"$lockFile"
     trap "flock -u $FD; flock -xn $FD && rm -f $lockFile" EXIT;
 
