@@ -30,6 +30,6 @@ fi
 outputFile=${2:-$1.enc}
 
 openssl aes-256-cbc -in "$1" -out "$outputFile"
-exitOnError 1 "Could not encrypt '$1'"
+exitOnError "Could not encrypt '$1'"
 
 echo "$(readlink -f "$outputFile")"

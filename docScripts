@@ -30,7 +30,7 @@ checkForHelp $1
 
 directory=${1:-$PWD}
 cd $directory
-exitOnError 1 "The command 'cd $directory' returned an error"
+exitOnError "The command 'cd $directory' returned an error"
 
 headFile="readme-head.rst"
 if [ -f "$headFile" ]; then

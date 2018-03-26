@@ -65,7 +65,7 @@ fi
 destDir="$(readlink -f "$2")"
 if [ ! -d "$destDir" ]; then
     mkdir -p "destDir$"
-    exitOnError 1 "Could not create directory \"$destDir\""
+    exitOnError "Could not create directory \"$destDir\""
 fi
 
 if [ -n "$3" ]; then
@@ -73,13 +73,13 @@ if [ -n "$3" ]; then
 fi
 
 tsid="$(timestamp-id)"
-exitOnError 1 "Error while running \"timestamp-id\""
+exitOnError "Error while running \"timestamp-id\""
 
 destFile="$destDir/$prefix$tsid.tgz"
 #cd
 
 homedir_escaped="$(sed 's/\//\\\//g' <<<"$HOME")"
 cat "$fileList" | sed "s/^~/$homedir_escaped/g" | xargs -I{} readlink -f "{}" | xargs -r tar cpvz -P -C / -f $destFile
-exitOnError 1 "while creating tarball: \"$destFile\" from file list: \"$fileList\""
+exitOnError "while creating tarball: \"$destFile\" from file list: \"$fileList\""
 
 echo "$(readlink -f "$destFile")"

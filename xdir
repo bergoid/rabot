@@ -70,7 +70,7 @@ if [ ! -w "$destDir" ]; then
 fi
 
 tsid="$(timestamp-id)"
-exitOnError 1 "The script 'timestamp-id' returned an error."
+exitOnError "The script 'timestamp-id' returned an error."
 
 srcDirName=$(basename "$srcDir")
 prefix="${3:-$srcDirName}"
@@ -85,7 +85,7 @@ if ! isSubdirOf "$srcDir" "$rootDir"; then
 fi
 
 cd "$rootDir"
-exitOnError 1 "Could not 'cd' into '$rootDir'"
+exitOnError "Could not 'cd' into '$rootDir'"
 
 srcDirRelative=$(stripBaseDir "$srcDir" "$rootDir")
 destFile="${destDir:-.}/${prefix}_$tsid.$xdir_this"

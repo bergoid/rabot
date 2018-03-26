@@ -14,6 +14,6 @@ xdir_other=zip
 . xdir
 
 tar -cpzf "$destFile" "$srcDirRelative"
-exitOnError 1 "The command 'tar -cpzf $destFile $srcDirName' returned an error"
+exitOnError "The command 'tar -cpzf $destFile $srcDirName' returned an error"
 
 readlink -f "$destFile"

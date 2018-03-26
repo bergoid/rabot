@@ -40,7 +40,7 @@ Choose a couple of files in ~/log to remove:
 In a git working directory, stage some of the modified files
 for the next commit:
 
-    $ git diff --name-only | pickn | xr git add
+    $ git diff --name-only | pickn | xargs -r git add
 
 See also: 'pick1', 'lfiles'
 DOCSTRING

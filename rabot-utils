@@ -25,7 +25,7 @@ function errcho
 #
 # Exit bash script after printing a message to stderr
 #
-# exitWith EXITSTAUS MESSAGE
+# exitWith EXITSTATUS MESSAGE
 #
 # EXITSTATUS : (default 1) the exit status
 # MESSAGE : (default empty) the message
@@ -49,9 +49,8 @@ function exitWith
 # command returned with a non-zero exit status. Do nothing
 # otherwise.
 #
-# exitOnError EXITSTATUS MESSAGE
+# exitOnError MESSAGE
 #
-# EXITSTATUS : (default 1) the exit status
 # MESSAGE : (default empty) the message
 #
 # Warning: If bash commands are executed on-the-fly to produce the
@@ -59,7 +58,7 @@ function exitWith
 #          will be reset before control reaches the body of the
 #          function 'exitOnError'. For example, the following command:
 #
-#               exitOnError 1 "The directory: $(pwd) is empty"
+#               exitOnError "The directory: $(pwd) is empty"
 #
 #          will never abort the script as long as the 'pwd' command
 #          succeeds.
@@ -69,7 +68,7 @@ function exitOnError
     exitStatus="$?"
 
     if [ "$exitStatus" -ne "0" ]; then
-        exitWith ${1:-1} "Error: ${2:-unknown}"
+        exitWith $exitStatus "Error: ${1:-unknown}"
     fi
 }
 
@@ -202,7 +201,7 @@ function isEmptyDir
 function require
 {
     which "$1" > /dev/null 2>&1
-    exitOnError 1 "Required command: '$1' not found"
+    exitOnError "Required command: '$1' not found"
 }
 
 
@@ -319,7 +318,7 @@ function acquireLock
     exec {FD}>"$lockFile"
     trap "flock -u $FD; flock -xn $FD && rm -f $lockFile" EXIT;
 
-    [[ -z "$2" ]] && waitArgs="" || waitArgs="-w $2 "
+    [ -z "$2" ] && waitArgs="" || waitArgs="-w $2 "
     flock -x $waitArgs"$FD"
 }
 
@@ -330,24 +329,26 @@ function acquireLock
 # Exits the script immediately or wait indefinitely if another
 # instance is detected.
 #
+# oneInstance [block]
+#
 # Examples:
 #
-# Exits immediately if another instance detected:
+# Exits immediately if another instance is detected:
 #
 #   oneInstance
 #
 #
-# Wait idnefinitely if another instance detected:
+# Wait indefinitely until all other instances have terminated:
 #
 #   oneInstance block
 #
 function oneInstance
 {
     lockName="$(basename "$0")"
-    [[ "$1" = "block" ]] && timeout="" || timeout="0"
+    [ "$1" = "block" ] && timeout="" || timeout="0"
 
     acquireLock "$lockName" "$timeout"
-    exitOnError 1 "An instance of this script is already running."
+    exitOnError "An instance of this script is already running."
 }
 
 

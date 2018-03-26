@@ -36,7 +36,7 @@ require rabot-vars
 destDir="$(rabot-vars backupDir)"
 
 mkdir -p "$destDir"
-exitOnError 1 "Error: the command 'mkdir -p \"$destDir\"' returned an error"
+exitOnError "Error: the command 'mkdir -p \"$destDir\"' returned an error"
 
 # 2.
 srcDir=${1:-$PWD}
@@ -46,4 +46,4 @@ if [ ! -d "$srcDir" ]; then
 fi
 
 tgzdir "$srcDir" "$destDir"
-exitOnError 1 "The script 'tgzdir' returned an error"
+exitOnError "The script 'tgzdir' returned an error"

@@ -27,7 +27,7 @@ checkForHelp $1
 minNumArgs 1 $#
 
 cd "$1"
-exitOnError 1 "walkdir : Could not 'cd' into $1"
+exitOnError "walkdir : Could not 'cd' into $1"
 shift
 
 while read dir; do

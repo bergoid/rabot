@@ -44,6 +44,6 @@ then
 fi
 
 openssl aes-256-cbc -d -in "$inFile" -out "$outFile"
-exitOnError 1 "Could not decrypt '$outFile'"
+exitOnError "Could not decrypt '$outFile'"
 
 echo "$(readlink -f "$outFile")"
