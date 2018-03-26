@@ -592,7 +592,10 @@ tgzdir
   Usage: tgzdir [DIR] [DESTDIR] [PREFIX] [ROOTDIR]
 
   'tgzdir' compresses the directory DIR to a .tgz file and saves
-  the latter in the directory DESTDIR.
+  it in the directory DESTDIR.
+
+  If omitted, DESTDIR will be the parent directory of DIR. If DIR is omitted
+  too, the current working directory is taken as DIR.
 
   The filename has the following pattern:
 
@@ -601,9 +604,6 @@ tgzdir
   where 'NAME' is either equal to the name of 'DIR' or to 'PREFIX' if the
   latter argument is given, 'YYYMMDDhhmmss' is the current datetime and 'RND'
   is a 3-character random alphanumerical string.
-
-  If omitted, DESTDIR will be the parent directory of DIR. If DIR is omitted
-  too, the current working directory is taken as DIR.
 
   Paths inside the .tgz file will be relative to DIR's parent directory,
   unless you specify ROOTDIR, then they will be relative to ROOTDIR. DIR must
@@ -715,7 +715,10 @@ zipdir
   Usage: zipdir [DIR] [DESTDIR] [PREFIX] [ROOTDIR]
 
   'zipdir' compresses the directory DIR to a .zip file and saves
-  the latter in the directory DESTDIR.
+  it in the directory DESTDIR.
+
+  If omitted, DESTDIR will be the parent directory of DIR. If DIR is omitted
+  too, the current working directory is taken as DIR.
 
   The filename has the following pattern:
 
@@ -724,9 +727,6 @@ zipdir
   where 'NAME' is either equal to the name of 'DIR' or to 'PREFIX' if the
   latter argument is given, 'YYYMMDDhhmmss' is the current datetime and 'RND'
   is a 3-character random alphanumerical string.
-
-  If omitted, DESTDIR will be the parent directory of DIR. If DIR is omitted
-  too, the current working directory is taken as DIR.
 
   Paths inside the .zip file will be relative to DIR's parent directory,
   unless you specify ROOTDIR, then they will be relative to ROOTDIR. DIR must
