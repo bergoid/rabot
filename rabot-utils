@@ -247,12 +247,12 @@ function showReq
 #
 # Terminate the script when not root
 #
-# rootOnly [MESSAGE]
+# requireRoot [MESSAGE]
 #
 # MESSAGE : Optional custom message to print
 #           on stderr when exiting.
 #
-function rootOnly
+function requireRoot
 {
     message="$1"
     : ${message:="You must be root"}

@@ -32,9 +32,10 @@ Example:
 
     $ find . -type f | flon
 
-This will open 'vim' and display the 'quickfix' window.
-The latter window will contain a list of every file in
-the current working directory and all its subdirectories.
+This will open 'vim' and display the 'quickfix' window
+at the bottom of the screen. This window will contain
+a list of every file in the current working directory
+and all its subdirectories.
 
 See also: 'glon'
 DOCSTRING
