@@ -75,6 +75,38 @@ function exitOnError
 
 ############################################################
 #
+# Trim trailing slash(es) from an argument string, except
+# when the string equals "/". Print the resulting string
+# to stdout.
+#
+# trimTrailingSlash STRING
+#
+# STRING : the argument string
+#
+# A table with examples:
+#
+#   argument        output
+#
+#   abc             abc
+#   abc/            abc
+#   abc/def         abc/def
+#   abc/def/        abc/def
+#   /               /
+#   ////            /
+#   (empty string)  (empty string)
+#
+function trimTrailingSlashes
+{
+    case "$1" in
+        *[!/]*/) echo "${1%"${1##*[!/]}"}";;
+        *[/]) echo "/";;
+        *) echo "$1";;
+    esac
+}
+
+
+############################################################
+#
 # Test if one directory is a subdirectory of another.
 # Print result to stdout. Both directories must exist.
 #
@@ -113,7 +145,7 @@ function isSubdirOf
 # stripBaseDir DIR BASEDIR
 #
 # DIR : a given subdirectory of a base directory
-# BASEDIR : the Cbase directory
+# BASEDIR : the base directory
 #
 function stripBaseDir
 {
@@ -326,14 +358,14 @@ function acquireLock
 ############################################################
 #
 # Allow only one instance of the script running at the time.
-# Exits the script immediately or wait indefinitely if another
+# Exit the script immediately or wait indefinitely if another
 # instance is detected.
 #
 # oneInstance [block]
 #
 # Examples:
 #
-# Exits immediately if another instance is detected:
+# Exit immediately if another instance is detected:
 #
 #   oneInstance
 #
@@ -364,7 +396,7 @@ function oneInstance
 #
 # Example:
 #
-# Exits with an error because 1 < 2
+# Exit with an error because 1 < 2
 #
 #   minNumArgs 2 1
 #
@@ -375,6 +407,7 @@ function minNumArgs
         exitWith 1 "Try '$(basename "$0") --help' for more information."
     fi
 }
+
 
 ############################################################
 #
