@@ -21,8 +21,9 @@ lines found by GREPCOMMAND.
 At startup, 'vim' will map the ':cn' and ':cp' commands
 to the 'F6' and '<SHIFT>-F6' key combinations,
 respectively. You can change this mapping either by
-editing the file 'vimnav' or by editing/overriding
-the variable 'vimNav' in 'rabot-vars'.
+editing the file 'vimnav' in the directory where rabot
+is installed or by setting an environment variable
+RABOT_VIMNAV to the path of your own vimscript.
 
 The 'quickfix' window will assume the following format
 for the output lines:
@@ -53,6 +54,6 @@ checkForHelp $1
 
 require vim
 
-vimFile="$(rabot-vars vimNav)"
+vimFile="${RABOT_VIMNAV:-"$(rabotInstallDir)/vimnav"}"
 
 vim -c "so $vimFile" -c "set errorformat=%f:%l:%m" -c "cb!" -c "copen" -

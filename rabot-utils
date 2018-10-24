@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[ -n "$RABOT_COMMON" ] && return || readonly RABOT_COMMON=1
+[ -n "$RABOT_UTILS" ] && return || readonly RABOT_UTILS=1
 
 ############################################################
 #                                                          #
@@ -499,4 +499,16 @@ function allHelp
         $fullname --help | sed "s/^/  /" | sed "s/[[:space:]]*$//"
         echo
     done < <(fnd $1 -executable ! -type d | sort)
+}
+
+
+############################################################
+#
+# Print the directory where rabot is installed
+#
+# rabotInstallDir
+#
+function rabotInstallDir
+{
+    echo $(dirname "$(which rabot-here)")
 }

@@ -19,12 +19,10 @@ Usage:
 The behavior of '$(basename "$0")' is similar to 'logop', with the
 following differences:
 
-- An extra 'DIR' argument will override the value provided by
-  'rabot-vars logDir'.
+- An extra 'DIR' argument will set a custom log directory.
 
-- The symlink called 'latest.txt' in the default log directory will
-  not be updated. Instead, a 'latest.txt' symlink is created/updated
-  in the 'DIR' directory.
+- As a result, the symlink called 'latest.txt' is created/updated
+  in 'DIR' instead of the log directory established by 'logop'.
 
 For more info, see: 'logop --help'
 

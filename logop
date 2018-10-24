@@ -31,7 +31,10 @@ adds a header and a footer section with supplementary information. If the
 second form is used however, this information will not contain the command
 string that has been invoked nor the exit status of the command.
 
-The logfile is saved in the folder obtained from invoking 'rabot-vars logDir'.
+The logfile is saved in the directory '~/log' by default. This can be
+overridden by setting the environment variable RABOT_LOGDIR to an appropriate
+value. If the directory doesn't exist, it will be created.
+
 The filename of the logfile has the following form:
 
     YYYYMMDDhhmmss_RND.txt
@@ -79,10 +82,13 @@ DOCSTRING
 checkForHelp $1
 
 require timestamp-id
-require rabot-vars
 
 # Construct path to logfile
-logDir="$(rabot-vars logDir)"
+: ${logDir:="${RABOT_LOGDIR:-"$HOME/log"}"}
+
+mkdir -p "$logDir"
+exitOnError "The directory '$logDir' could not be created"
+
 fileName="$(timestamp-id).txt"
 logFile="$logDir/$fileName"
 

@@ -41,8 +41,8 @@ budir
 
   'budir' performs the following actions:
 
-  1. Obtain the path to the destination directory by invoking 'rabot-vars backupDir'
-     and create this directory if it doesn't already exist.
+  1. If the environment variable RABOT_BUDIR is defined, this is used as the
+     destination directory. Otherwise, '~/backup' is used.
 
   2. Run the script 'tgzdir' to compress the contents of DIR into a .tgz file
      located in the destination directory. If DIR is omitted, the current working
@@ -136,8 +136,9 @@ flon
   At startup, 'vim' will map the ':cn' and ':cp' commands
   to the 'F6' and '<SHIFT>-F6' key combinations,
   respectively. You can change this mapping either by
-  editing the file 'vimnav' or by editing/overriding
-  the variable 'vimNav' in 'rabot-vars'.
+  editing the file 'vimnav' in the directory where rabot
+  is installed or by setting an environment variable
+  RABOT_VIMNAV to the path of your own vimscript.
 
   The 'quickfix' window will assume that the output
   contains nothing but filenames, as 'vim' will be
@@ -229,8 +230,9 @@ glon
   At startup, 'vim' will map the ':cn' and ':cp' commands
   to the 'F6' and '<SHIFT>-F6' key combinations,
   respectively. You can change this mapping either by
-  editing the file 'vimnav' or by editing/overriding
-  the variable 'vimNav' in 'rabot-vars'.
+  editing the file 'vimnav' in the directory where rabot
+  is installed or by setting an environment variable
+  RABOT_VIMNAV to the path of your own vimscript.
 
   The 'quickfix' window will assume the following format
   for the output lines:
@@ -327,7 +329,10 @@ logop
   second form is used however, this information will not contain the command
   string that has been invoked nor the exit status of the command.
 
-  The logfile is saved in the folder obtained from invoking 'rabot-vars logDir'.
+  The logfile is saved in the directory '~/log' by default. This can be
+  overridden by setting the environment variable RABOT_LOGDIR to an appropriate
+  value. If the directory doesn't exist, it will be created.
+
   The filename of the logfile has the following form:
 
       YYYYMMDDhhmmss_RND.txt
@@ -384,12 +389,10 @@ logopd
   The behavior of 'logopd' is similar to 'logop', with the
   following differences:
 
-  - An extra 'DIR' argument will override the value provided by
-    'rabot-vars logDir'.
+  - An extra 'DIR' argument will set a custom log directory.
 
-  - The symlink called 'latest.txt' in the default log directory will
-    not be updated. Instead, a 'latest.txt' symlink is created/updated
-    in the 'DIR' directory.
+  - As a result, the symlink called 'latest.txt' is created/updated
+    in 'DIR' instead of the log directory established by 'logop'.
 
   For more info, see: 'logop --help'
 
@@ -543,34 +546,11 @@ pickn
 
   See also: 'pick1', 'lfiles'
 
-rabot-vars
+rabot-here
 ----------
 ::
 
-  Usage: rabot-vars VARNAME
-
-  'rabot-vars' collects some configuration settings of 'rabot'.
-
-  It will output the value of the variable whose name is specified
-  as a command-line argument.
-
-  These values can be overridden outside 'rabot-vars' by redefining
-  the variable before calling this script. For example:
-
-      $ rabot-vars logDir
-      MyNormalLogDir
-      $ export logDir=MySpecialLogDir
-      $ rabot-vars logDir
-      MySpecialLogDir
-
-  The value of the variables can also be changed permanently by editing
-  'rabot-vars'.
-
-  For a list of all variables defined by 'rabot-vars' and
-  their values, see the source code of the script.
-
-  If you are a first-time user of rabot, you probably might want to edit
-  this script to change the default values of some of the variables.
+  Placeholder script to find the installation dir of 'rabot' by means of the command: 'which rabot-here'
 
 randid
 ------

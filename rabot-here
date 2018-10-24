@@ -1,0 +1,1 @@
+echo "Placeholder script to find the installation dir of 'rabot' by means of the command: 'which $(basename "$0")'"

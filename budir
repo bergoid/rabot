@@ -16,8 +16,8 @@ Summary: Compress the contents of a directory into a .tgz file
 
 '$(basename "$0")' performs the following actions:
 
-1. Obtain the path to the destination directory by invoking 'rabot-vars backupDir'
-   and create this directory if it doesn't already exist.
+1. If the environment variable RABOT_BUDIR is defined, this is used as the
+   destination directory. Otherwise, '~/backup' is used.
 
 2. Run the script 'tgzdir' to compress the contents of DIR into a .tgz file
    located in the destination directory. If DIR is omitted, the current working
@@ -30,10 +30,9 @@ DOCSTRING
 checkForHelp $1
 
 require tgzdir
-require rabot-vars
 
 # 1.
-destDir="$(rabot-vars backupDir)"
+destDir="${RABOT_BUDIR:-"$HOME/backup"}"
 
 mkdir -p "$destDir"
 exitOnError "Error: the command 'mkdir -p \"$destDir\"' returned an error"
