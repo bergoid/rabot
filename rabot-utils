@@ -65,7 +65,7 @@ function exitWith
 #
 function exitOnError
 {
-    exitStatus="$?"
+    local exitStatus="$?"
 
     if [ "$exitStatus" -ne "0" ]; then
         exitWith $exitStatus "Error: ${1:-unknown}"
@@ -129,10 +129,10 @@ function isSubdirOf
         exitWith 1 "Error: the parent dir of '$2' doesn't exist"
     fi
 
-    realDir1="$(readlink -f "$1")"
-    realDir2="$(readlink -f "$2")"
+    local realDir1="$(readlink -f "$1")"
+    local realDir2="$(readlink -f "$2")"
 
-    lengthMatched="$(expr match "$realDir1" "$realDir2")"
+    local lengthMatched="$(expr match "$realDir1" "$realDir2")"
 
     [ "$lengthMatched" -eq "${#realDir2}" ]
 }
@@ -150,9 +150,9 @@ function isSubdirOf
 function stripBaseDir
 {
     if isSubdirOf "$1" "$2"; then
-        dir="$(readlink -f "$1")"
-        baseDir="$(readlink -f "$2")"
-        stripped=${dir:$(expr match "$dir" "$baseDir")}
+        local dir="$(readlink -f "$1")"
+        local baseDir="$(readlink -f "$2")"
+        local stripped=${dir:$(expr match "$dir" "$baseDir")}
         stripped=${stripped%/}
         stripped=${stripped#/}
         echo $stripped
@@ -252,15 +252,16 @@ function showReq
 
     function processRequirements
     {
+        local line=
         while read line; do
-            toolName="$(grep -o '\S\S*$' <<<$line)"
+            local toolName="$(grep -o '\S\S*$' <<<$line)"
             showReq_core "$toolName"
         done < <(grep "^require\s\s*\S\S*\s*$" "$1")
     }
 
     function showReq_core
     {
-        pathToCommand="$(which "$1")"
+        local pathToCommand="$(which "$1")"
         if [ "$?" -ne "0" ]; then
             errcho "'$1' not found"
         else
@@ -286,7 +287,7 @@ function showReq
 #
 function requireRoot
 {
-    message="$1"
+    local message="$1"
     : ${message:="You must be root"}
 
     if [ "$EUID" -ne 0 ]; then
@@ -346,11 +347,11 @@ function acquireLock
         exitWith 1 "Error: $FUNCNAME() needs at least one argument."
     fi
 
-    lockFile="/tmp/$1"
+    local lockFile="/tmp/$1"
     exec {FD}>"$lockFile"
     trap "flock -u $FD; flock -xn $FD && rm -f $lockFile" EXIT;
 
-    [ -z "$2" ] && waitArgs="" || waitArgs="-w $2 "
+    [ -z "$2" ] && local waitArgs="" || local waitArgs="-w $2 "
     flock -x $waitArgs"$FD"
 }
 
@@ -376,8 +377,8 @@ function acquireLock
 #
 function oneInstance
 {
-    lockName="$(basename "$0")"
-    [ "$1" = "block" ] && timeout="" || timeout="0"
+    local lockName="$(basename "$0")"
+    [ "$1" = "block" ] && local timeout="" || local timeout="0"
 
     acquireLock "$lockName" "$timeout"
     exitOnError "An instance of this script is already running."
@@ -490,6 +491,9 @@ function elapsedTime
 #
 function allHelp
 {
+    local name=
+
+    local fullname=
     while read fullname; do
         name="$(basename "$fullname")"
         echo $name
