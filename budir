@@ -34,8 +34,7 @@ require tgzdir
 # 1.
 destDir="${RABOT_BUDIR:-"$HOME/backup"}"
 
-mkdir -p "$destDir"
-exitOnError "Error: the command 'mkdir -p \"$destDir\"' returned an error"
+try mkdir -p "$destDir"
 
 # 2.
 srcDir=${1:-$PWD}
@@ -44,5 +43,4 @@ if [ ! -d "$srcDir" ]; then
     exitWith 1 "Error: the source directory '$srcDir' doesn't exist"
 fi
 
-tgzdir "$srcDir" "$destDir"
-exitOnError "The script 'tgzdir' returned an error"
+try tgzdir "$srcDir" "$destDir"

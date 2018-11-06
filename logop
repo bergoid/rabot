@@ -86,8 +86,7 @@ require timestamp-id
 # Construct path to logfile
 : ${logDir:="${RABOT_LOGDIR:-"$HOME/log"}"}
 
-mkdir -p "$logDir"
-exitOnError "The directory '$logDir' could not be created"
+try mkdir -p "$logDir"
 
 fileName="$(timestamp-id).txt"
 logFile="$logDir/$fileName"

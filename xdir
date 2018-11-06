@@ -69,8 +69,7 @@ if [ ! -w "$destDir" ]; then
     exitWith 1 "Error: the destination directory '$destDir' isn't writable"
 fi
 
-tsid="$(timestamp-id)"
-exitOnError "The script 'timestamp-id' returned an error."
+tsid="$(try timestamp-id)"
 
 srcDirName=$(basename "$srcDir")
 prefix="${3:-$srcDirName}"
@@ -84,8 +83,7 @@ if ! isSubdirOf "$srcDir" "$rootDir"; then
     exitWith 1 "Error: '$srcDir' is not a subdirectory of '$rootDir'"
 fi
 
-cd "$rootDir"
-exitOnError "Could not 'cd' into '$rootDir'"
+try cd "$rootDir"
 
 srcDirRelative=$(stripBaseDir "$srcDir" "$rootDir")
 destFile="${destDir:-.}/${prefix}_$tsid.$xdir_this"

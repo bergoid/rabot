@@ -64,16 +64,14 @@ fi
 
 destDir="$(readlink -f "$2")"
 if [ ! -d "$destDir" ]; then
-    mkdir -p "destDir$"
-    exitOnError "Could not create directory \"$destDir\""
+    try mkdir -p "destDir$"
 fi
 
 if [ -n "$3" ]; then
     prefix=$3_
 fi
 
-tsid="$(timestamp-id)"
-exitOnError "Error while running \"timestamp-id\""
+tsid="$(try timestamp-id)"
 
 destFile="$destDir/$prefix$tsid.tgz"
 #cd

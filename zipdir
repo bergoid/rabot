@@ -13,7 +13,6 @@ xdir_other=tgz
 
 . xdir
 
-zip -rq "$destFile" "$srcDirRelative"
-exitOnError "The command 'zip -rq $destFile $srcDirName' returned an error"
+try zip -rq "$destFile" "$srcDirRelative"
 
 readlink -f "$destFile"
