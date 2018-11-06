@@ -68,10 +68,15 @@ function exitOnError
     local exitStatus="$?"
 
     if [ "$exitStatus" -ne "0" ]; then
-        exitWith $exitStatus "Error: ${1:-unknown}"
+        exitWith $exitStatus "${1:-"Unknown error"}"
     fi
 }
 
+function try
+{
+    $@
+    exitOnError "Error when running command: '$*'"
+}
 
 ############################################################
 #
@@ -228,51 +233,19 @@ function isEmptyDir
 # Check if a given executable is available.
 # Terminate the script when not.
 #
-# require EXEC
+# require EXEC1 [ EXEC2 ... ]
 #
 function require
 {
-    which "$1" > /dev/null 2>&1
-    exitOnError "Required command: '$1' not found"
-}
-
-
-############################################################
-#
-# Print all 'require'd executables of a given script.
-# Descend recursively into 'require'd scripts.
-#
-# showReq SCRIPT
-#
-function showReq
-{
-    if [ -z "$1" ]; then
-        exitWith 1  "Error: 'showReq' requires an argument"
+    if [ $# -eq 0 ]; then
+        exitWith 1 "Error: 'require' must have at least 1 argument"
     fi
 
-    function processRequirements
-    {
-        local line=
-        while read line; do
-            local toolName="$(grep -o '\S\S*$' <<<$line)"
-            showReq_core "$toolName"
-        done < <(grep "^require\s\s*\S\S*\s*$" "$1")
-    }
-
-    function showReq_core
-    {
-        local pathToCommand="$(which "$1")"
-        if [ "$?" -ne "0" ]; then
-            errcho "'$1' not found"
-        else
-            echo "$(basename "$pathToCommand")"
-            if isTextFile "$pathToCommand"; then
-                processRequirements "$pathToCommand"
-            fi
-        fi
-    }
-
-    processRequirements "$1"
+    # loop over all arguments
+    for arg; do
+        which "$arg" > /dev/null 2>&1
+        exitOnError "Required command: '$arg' not found"
+    done
 }
 
 
@@ -425,6 +398,7 @@ function makePlural
         echo "$1"
     fi
 }
+
 
 ############################################################
 #
