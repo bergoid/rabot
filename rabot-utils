@@ -72,11 +72,27 @@ function exitOnError
     fi
 }
 
+
+############################################################
+#
+# Run a command, and if exit status is nonzero:
+# print an error message and abort script.
+#
+# try COMMAND
+#
+# Note: if used in a subshell, failure will only exit the
+# subshell. The command:
+#
+#   myVar=$(try myCommand)
+#
+# will NOT terminate the script if 'myCommand' fails.
+#
 function try
 {
     "$@"
     exitOnError "Error when running command: '$*'"
 }
+
 
 ############################################################
 #

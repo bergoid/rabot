@@ -71,7 +71,7 @@ if [ -n "$3" ]; then
     prefix=$3_
 fi
 
-tsid="$(try timestamp-id)"
+tsid="$(timestamp-id)"
 
 destFile="$destDir/$prefix$tsid.tgz"
 #cd

@@ -69,7 +69,7 @@ if [ ! -w "$destDir" ]; then
     exitWith 1 "Error: the destination directory '$destDir' isn't writable"
 fi
 
-tsid="$(try timestamp-id)"
+tsid="$(timestamp-id)"
 
 srcDirName=$(basename "$srcDir")
 prefix="${3:-$srcDirName}"
