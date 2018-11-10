@@ -94,6 +94,39 @@ function try
 }
 
 
+function tell
+{
+    "$@"
+    if [ "$?" -ne "0" ]; then
+        errcho "Error when running command: '$*'"
+    fi
+}
+
+
+function tryp
+{
+    try "${@:2}"
+    pushCommand "$1"
+}
+
+
+declare -a commandStack
+
+function atExit
+{
+    for (( idx=${#commandStack[@]}-1 ; idx>=0 ; idx-- )); do
+        ${commandStack[idx]}
+    done
+}
+
+trap "atExit" EXIT
+
+function pushCommand
+{
+    commandStack+=("$1")
+}
+
+
 ############################################################
 #
 # Trim trailing slash(es) from an argument string, except
