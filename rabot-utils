@@ -13,7 +13,7 @@
 #
 # Print to stderr
 #
-# errcho [ARGS]
+# errcho [ARGS ...]
 #
 function errcho
 {
@@ -78,7 +78,7 @@ function exitOnError
 # Run a command, and if exit status is nonzero:
 # print an error message and abort script.
 #
-# try COMMAND
+# try COMMAND [ARGS ...]
 #
 # Note: if used in a subshell, failure will only exit the
 # subshell. The command:
@@ -94,6 +94,13 @@ function try
 }
 
 
+############################################################
+#
+# Run a command, and if exit status is nonzero:
+# print an error message.
+#
+# tell COMMAND [ARGS ...]
+#
 function tell
 {
     "$@"
@@ -103,6 +110,36 @@ function tell
 }
 
 
+############################################################
+#
+# Run a command with 'try' and on success, push a
+# counterpart command on the unwind stack, to be
+# executed when the script exits.
+#
+# tryp UNWIND_COMMAND COMMAND [ARGS ...]
+#
+# This allows for the graceful release of a series of
+# acquired resources if an error stops the script.
+#
+# Example:
+#
+# This code, with an error on the 3rd line:
+#
+#   tryp "echo Close A" echo Open A
+#   tryp "echo Close B" echo Open B
+#   tryp "echo Close C" echoX Open C
+#   tryp "echo Close D" echo Open D
+#   tryp "echo Close E" echo Open E
+#
+# will result in this output:
+#
+#   Open A
+#   Open B
+#   /home/bert/tools/rabot/rabot-utils: line 92: echoX: command not found
+#   Error when running command: 'echoX Open C'
+#   Close B
+#   Close A
+#
 function tryp
 {
     try "${@:2}"
@@ -110,20 +147,25 @@ function tryp
 }
 
 
-declare -a commandStack
+# The array of unwind commands to execute at exit
+declare -a unwindCommands
 
+# Function that will be called at exit. The array 'unwindCommands'
+# is iterated in reverse, and every command executed.
 function atExit
 {
-    for (( idx=${#commandStack[@]}-1 ; idx>=0 ; idx-- )); do
-        ${commandStack[idx]}
+    for (( idx=${#unwindCommands[@]}-1 ; idx>=0 ; idx-- )); do
+        tell ${unwindCommands[idx]}
     done
 }
 
+# Register 'atExit' to be called when the script exits
 trap "atExit" EXIT
 
+# Add an unwind command to the array
 function pushCommand
 {
-    commandStack+=("$1")
+    unwindCommands+=("$1")
 }
 
 
