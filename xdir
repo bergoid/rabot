@@ -79,7 +79,7 @@ fi
 
 srcDirParent=$(dirname "$srcDir")
 rootDir="${4:-$srcDirParent}"
-if ! isSubdirOf "$srcDir" "$rootDir"; then
+if ! isSubPathOf "$srcDir" "$rootDir"; then
     exitWith 1 "Error: '$srcDir' is not a subdirectory of '$rootDir'"
 fi
 

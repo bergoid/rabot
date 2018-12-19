@@ -1,6 +1,7 @@
 #!/bin/bash
 
-[ -n "$RABOT_UTILS" ] && return || readonly RABOT_UTILS=1
+# TODO
+#[ -n "$RABOT_UTILS" ] && return || readonly RABOT_UTILS=1
 
 ############################################################
 #                                                          #
@@ -25,7 +26,7 @@ function errcho
 #
 # Exit bash script after printing a message to stderr
 #
-# exitWith EXITSTATUS MESSAGE
+# exitWith [EXITSTATUS] [MESSAGE]
 #
 # EXITSTATUS : (default 1) the exit status
 # MESSAGE : (default empty) the message
@@ -35,6 +36,7 @@ function exitWith
     if [ -n "$2" ]; then
         errcho "$2"
     fi
+
     if [ -n "$1" ]; then
         exit "$1"
     else
@@ -89,6 +91,10 @@ function exitOnError
 #
 function try
 {
+    if [ -n "$RABOT_VERBOSE" ]; then
+        echo "$@"
+    fi
+
     "$@"
     exitOnError "Error when running command: '$*'"
 }
@@ -99,11 +105,16 @@ function try
 # Run a command, and if exit status is nonzero:
 # print an error message.
 #
-# tell COMMAND [ARGS ...]
+# warn COMMAND [ARGS ...]
 #
-function tell
+function warn
 {
+    if [ -n "$RABOT_VERBOSE" ]; then
+        echo "$@"
+    fi
+
     "$@"
+
     if [ "$?" -ne "0" ]; then
         errcho "Error when running command: '$*'"
     fi
@@ -112,11 +123,11 @@ function tell
 
 ############################################################
 #
-# Run a command with 'try' and on success, push a
-# counterpart command on the unwind stack, to be
+# Run a command with 'try' and on success, push an
+# 'undo' command on the undo stack, to be
 # executed when the script exits.
 #
-# tryp UNWIND_COMMAND COMMAND [ARGS ...]
+# tru UNDO_COMMAND COMMAND [ARGS ...]
 #
 # This allows for the graceful release of a series of
 # acquired resources if an error stops the script.
@@ -125,11 +136,11 @@ function tell
 #
 # This code, with an error on the 3rd line:
 #
-#   tryp "echo Close A" echo Open A
-#   tryp "echo Close B" echo Open B
-#   tryp "echo Close C" echoX Open C
-#   tryp "echo Close D" echo Open D
-#   tryp "echo Close E" echo Open E
+#   tru "echo Close A" echo Open A
+#   tru "echo Close B" echo Open B
+#   tru "echo Close C" echoX Open C
+#   tru "echo Close D" echo Open D
+#   tru "echo Close E" echo Open E
 #
 # will result in this output:
 #
@@ -140,32 +151,68 @@ function tell
 #   Close B
 #   Close A
 #
-function tryp
+function tru
 {
     try "${@:2}"
     pushCommand "$1"
 }
 
 
-# The array of unwind commands to execute at exit
-declare -a unwindCommands
+# The array of undo commands to execute at exit, in LIFO fashion.
+declare -a undoStack
 
-# Function that will be called at exit. The array 'unwindCommands'
+# Function that will be called at exit. The array 'undoStack'
 # is iterated in reverse, and every command executed.
 function atExit
 {
-    for (( idx=${#unwindCommands[@]}-1 ; idx>=0 ; idx-- )); do
-        tell ${unwindCommands[idx]}
+    for (( idx=${#undoStack[@]}-1 ; idx>=0 ; idx-- )); do
+        warn ${undoStack[idx]}
     done
 }
 
 # Register 'atExit' to be called when the script exits
 trap "atExit" EXIT
 
-# Add an unwind command to the array
+# Add an undo command to the array
 function pushCommand
 {
-    unwindCommands+=("$1")
+    undoStack+=("$1")
+}
+
+
+############################################################
+#
+# Pause the script and wait for the user to press a key
+#
+# pause
+#
+function pause
+{
+    read -n 1 -s -r -p "Press any key to continue ..."
+    echo
+}
+
+
+############################################################
+#
+# Prompt for the value of a variable, only if the variable
+# currently has an empty value.
+#
+# promptIfEmpty VARNAME MESSAGE
+#
+# VARNAME: the name of the variable
+# MESSAGE: the message that must be shown before the prompt
+#
+function promptIfEmpty
+{
+    local varName="$1"
+    local varValue=
+    local message="$2"
+
+    if [ -z "${!varName}" ]; then
+        echo -n "$message: " && read varValue
+        declare -g "$varName=$varValue"
+    fi
 }
 
 
@@ -203,34 +250,29 @@ function trimTrailingSlashes
 
 ############################################################
 #
-# Test if one directory is a subdirectory of another.
-# Print result to stdout. Both directories must exist.
+# Test if a file path is a member of another path.
+# Print result to stdout.
 #
-# isSubdirOf DIR1 DIR2
+# isSubPathOf PATH1 PATH2
 #
-# DIR1 : the candidate subdirectory
-# DIR2 : the candidate parent (or grandparent etc...) directory
+# PATH1 : the candidate path
+# PATH2 : the candidate parent (or grandparent etc...) path
 #
-function isSubdirOf
+function isSubPathOf
 {
     if [ -z "$1" -o -z "$2" ]; then
-        exitWith 1 "Error: the function isSubdirOf requires 2 arguments."
+        exitWith 1 "Error: the function isSubPathOf requires 2 arguments."
     fi
 
-    if [ ! -d "$(dirname "$1")" ]; then
-        exitWith 1 "Error: the parent dir of '$1' doesn't exist"
-    fi
+    local realPath1="$(readlink -f "$1")"
+    exitOnError "Error when running command: 'readlink -f $1'"
 
-    if [ ! -d "$(dirname "$2")" ]; then
-        exitWith 1 "Error: the parent dir of '$2' doesn't exist"
-    fi
+    local realPath2="$(readlink -f "$2")"
+    exitOnError "Error when running command: 'readlink -f $2'"
 
-    local realDir1="$(readlink -f "$1")"
-    local realDir2="$(readlink -f "$2")"
+    local lengthMatched="$(expr match "$realPath1" "$realPath2")"
 
-    local lengthMatched="$(expr match "$realDir1" "$realDir2")"
-
-    [ "$lengthMatched" -eq "${#realDir2}" ]
+    [ "$lengthMatched" -eq "${#realPath2}" ]
 }
 
 
@@ -245,7 +287,7 @@ function isSubdirOf
 #
 function stripBaseDir
 {
-    if isSubdirOf "$1" "$2"; then
+    if isSubPathOf "$1" "$2"; then
         local dir="$(readlink -f "$1")"
         local baseDir="$(readlink -f "$2")"
         local stripped=${dir:$(expr match "$dir" "$baseDir")}
