@@ -77,6 +77,48 @@ function exitOnError
 
 ############################################################
 #
+# Run a command and suppress all output.
+# If the exit status is zero, return 'true'.
+# Return 'false' if the exit status is non-zero.
+#
+# succeeds COMMAND [ARGS ...]
+#
+# This can be used to make conditionals more expressive,
+# while avoiding unneeded output:
+#
+# if succeeds pgrep -f 'someProcess'; then
+#   ...
+# fi
+#
+function succeeds
+{
+    "$@" > /dev/null 2>&1
+    [ "$?" -eq "0" ]
+}
+
+
+############################################################
+#
+# Run a command and suppress all output.
+# If the exit status is non-zero, return 'true'.
+# Return 'false' if the exit status is zero.
+#
+# This can be used to make conditionals more expressive,
+# while avoiding unneeded output:
+#
+# if fails pgrep -f 'someProcess'; then
+#   ...
+# fi
+#
+function fails
+{
+    "$@" > /dev/null 2>&1
+    [ "$?" -ne "0" ]
+}
+
+
+############################################################
+#
 # Run a command, and if exit status is nonzero:
 # print an error message and abort script.
 #
@@ -134,7 +176,7 @@ function warn
 #
 # Example:
 #
-# This code, with an error on the 3rd line:
+# This code, with a syntax error on the 3rd line:
 #
 #   tru "echo Close A" echo Open A
 #   tru "echo Close B" echo Open B
@@ -146,7 +188,7 @@ function warn
 #
 #   Open A
 #   Open B
-#   /home/bert/tools/rabot/rabot-utils: line 92: echoX: command not found
+#   /home/user/tools/rabot/rabot-utils: line 92: echoX: command not found
 #   Error when running command: 'echoX Open C'
 #   Close B
 #   Close A
