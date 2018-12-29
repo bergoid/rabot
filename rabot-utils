@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# TODO
-#[ -n "$RABOT_UTILS" ] && return || readonly RABOT_UTILS=1
+[ -n "$RABOT_UTILS" ] && return || readonly RABOT_UTILS=1
 
 ############################################################
 #                                                          #
