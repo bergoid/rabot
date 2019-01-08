@@ -559,6 +559,66 @@ function minNumArgs
 
 ############################################################
 #
+# Reset color in the bash terminal.
+# See functions below for examples
+#
+function fg0
+{
+    echo "\e[0m"
+}
+
+
+############################################################
+#
+# Select one of the colors from the 16-color palette
+#
+# Example:
+#
+# This will print the word 'are' in yellow:
+#
+# echo -e How $(fg16 3)are$(fg0) you?
+#
+function fg16
+{
+    echo "\e[$(expr $1 / 8);$(expr 30 + $(expr $1 % 8))m"
+}
+
+
+############################################################
+#
+# Select one of the colors from the 256-color palette
+#
+# Example:
+#
+# This will print the word 'are' in "Gold3":
+#
+# echo -e How $(fg256 178)are$(fg0) you?
+#
+function fg256
+{
+    echo "\e[38;5;$1m"
+}
+
+
+############################################################
+#
+# Select a color by specifying its RGB values
+#
+# Example:
+#
+# This will print the word 'are' in some kind of green:
+#
+# echo -e How $(fgRGB 20 240 120)are$(fg0) you?
+#
+function fgRGB
+{
+    echo "\\e[38;2;$1;$2;$3m"
+}
+
+
+
+############################################################
+#
 # Helper function for elapsedTime. Echo WORD with an
 # additional 's' if VALUE differs from 1.
 #
