@@ -83,16 +83,7 @@ checkForHelp $1
 
 require timestamp-id
 
-# Construct path to logfile
-: ${logDir:="${RABOT_LOGDIR:-"$HOME/log"}"}
-
-try mkdir -p "$logDir"
-
-fileName="$(timestamp-id).txt"
-logFile="$logDir/$fileName"
-
-# Update symlink 'latest.txt' to point to latest logfile
-ln -sf "$fileName" "$logDir/latest.txt"
+logFile="$(newLogfile)"
 
 . logopx $* 2>&1 > >(tee -a "$logFile")
 

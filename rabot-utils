@@ -195,29 +195,42 @@ function warn
 function tru
 {
     try "${@:2}"
-    pushCommand "$1"
+    pushExitCommand "$1"
 }
 
 
-# The array of undo commands to execute at exit, in LIFO fashion.
-declare -a undoStack
-
-# Function that will be called at exit. The array 'undoStack'
-# is iterated in reverse, and every command executed.
-function atExit
+############################################################
+#
+# Internal declarations.
+# When the scripts exits, the array '__undo_stack' is
+# iterated in reverse, and every element executed as a
+# command.
+#
+declare -a __undo_stack
+function __at_exit
 {
-    for (( idx=${#undoStack[@]}-1 ; idx>=0 ; idx-- )); do
-        warn ${undoStack[idx]}
+    for (( idx=${#__undo_stack[@]}-1 ; idx>=0 ; idx-- )); do
+        warn ${__undo_stack[idx]}
     done
 }
+trap "__at_exit" EXIT
 
-# Register 'atExit' to be called when the script exits
-trap "atExit" EXIT
 
-# Add an undo command to the array
-function pushCommand
+############################################################
+#
+# Add a command to be executed when the script exits
+# When this function is called multiple times, the commands
+# will be executed in LIFO order.
+#
+# pushExitCommand COMMAND
+#
+# Example:
+#
+#   pushExitCommand "echo The script is exiting ..."
+#
+function pushExitCommand
 {
-    undoStack+=("$1")
+    __undo_stack+=("$1")
 }
 
 
@@ -225,11 +238,11 @@ function pushCommand
 #
 # Pause the script and wait for the user to press a key
 #
-# pause
+# pause [MESSAGE]
 #
 function pause
 {
-    read -n 1 -s -r -p "Press any key to continue ..."
+    read -n 1 -s -r -p "${1:-"Press any key to continue ... "}"
     echo
 }
 
@@ -576,7 +589,7 @@ function fg0
 #
 # This will print the word 'are' in yellow:
 #
-# echo -e How $(fg16 3)are$(fg0) you?
+#   echo -e How $(fg16 3)are$(fg0) you?
 #
 function fg16
 {
@@ -592,7 +605,7 @@ function fg16
 #
 # This will print the word 'are' in "Gold3":
 #
-# echo -e How $(fg256 178)are$(fg0) you?
+#   echo -e How $(fg256 178)are$(fg0) you?
 #
 function fg256
 {
@@ -608,7 +621,7 @@ function fg256
 #
 # This will print the word 'are' in some kind of green:
 #
-# echo -e How $(fgRGB 20 240 120)are$(fg0) you?
+#   echo -e How $(fgRGB 20 240 120)are$(fg0) you?
 #
 function fgRGB
 {
@@ -723,4 +736,29 @@ function allHelp
 function rabotInstallDir
 {
     echo $(dirname "$(which rabot-here)")
+}
+
+
+############################################################
+#
+# Construct path to new logfile and re-target the
+# 'latest.txt' symlink to it.
+# Print the path to the logfile on stdout.
+#
+# newLogfile
+#
+function newLogfile
+{
+    # Set logDir, unless already done (as in 'logopd')
+    : ${logDir:="${RABOT_LOGDIR:-"$HOME/log"}"}
+
+    try mkdir -p "$logDir"
+
+    local fileName="$(timestamp-id).txt"
+    local filePath="$logDir/$fileName"
+
+    # Update symlink 'latest.txt' to point to latest logfile
+    ln -sf "$fileName" "$logDir/latest.txt"
+
+    echo "$filePath"
 }
