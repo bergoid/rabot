@@ -43,7 +43,7 @@ then
     exitWith 1 "Error: output file unknown."
 fi
 
-openssl aes-256-cbc -d -in "$inFile" -out "$outFile"
+openssl enc -aes-256-cbc -md sha512 -pbkdf2 -iter 1000 -salt -d -in "$inFile" -out "$outFile"
 exitOnError "Could not decrypt '$outFile'"
 
 echo "$(readlink -f "$outFile")"
