@@ -23,7 +23,7 @@ Every executable script in ``rabot`` has its own help function. You get the help
 
 Most scripts fall into the following categories:
 
-* Easily create compressed, timestamped snapshots of your work-in-progress: ``budir``, ``cleandir``, ``tgzfiles``, ``tgzdir``, ``zipdir``. This can come in handy if you are collaborating with someone over email, or for little things where you think proper version control is too much hassle.
+* Easily create compressed, timestamped snapshots of a directory: ``budir``, ``cleandir``, ``tgzfiles``, ``tgzdir``, ``zipdir``.
 * Save the output of console programs to logfiles: ``logop``, ``logopd``, ``logopf``.
 * Search through directory trees while ignoring the subdirectories created by version control software: ``fnd``, ``fnd0``, ``grp``.
 * Navigate through search results with ``vim`` and its ``quickfix`` window: ``flon``, ``glon``.
@@ -279,29 +279,33 @@ lfiles
 ------
 ::
 
-  Usage: lfiles [DIR]
+  Usage: lfiles [DIR] [-t]
 
   'lfiles' outputs the full paths to all regular files in
   the directory DIR (or the current working directory if
   the argument is omitted), one file per line and sorted by
   modification time in reverse chronological order (newest
-  first). This output can be useful as input to other tools,
-  like 'pickn' or 'pick1'.
+  first). Files in subdirectories are not shown.
+  This output can be useful as input to other tools, like
+  'pickn' or 'pick1'.
+  If '-t' is specified then binary files are not shown. Useful
+  if you only want to list files that can be opened by a text
+  editor (see second example below).
+  The order of 'DIR' and '-t' can be swapped at the command
+  line.
 
   Examples:
 
-  List log files created by 'logop':
-
-      $ lfiles ~/log
-      /home/user/log/20161120205104_tBS.txt
-      /home/user/log/20161120153503_zyW.txt
-      /home/user/log/20161120153224_sFf.txt
-
-  Choose one log file to view:
+  Choose one logfile created by 'logop' and open it in 'less'
 
       $ lfiles ~/log | pick1 | xargs -r less
 
-  See also: 'pick1', 'pickn', 'logop'
+  Open the non-binary files of the current working directory
+  in 'vim':
+
+      $ lfiles -t | flon
+
+  See also: 'pick1', 'pickn', 'logop', 'flon'
 
 logop
 -----

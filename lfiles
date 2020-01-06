@@ -9,32 +9,62 @@ fi
 function showHelp
 {
 cat << DOCSTRING
-Usage: $(basename "$0") [DIR]
+Usage: $(basename "$0") [DIR] [-t]
 
 '$(basename "$0")' outputs the full paths to all regular files in
 the directory DIR (or the current working directory if
 the argument is omitted), one file per line and sorted by
 modification time in reverse chronological order (newest
-first). This output can be useful as input to other tools,
-like 'pickn' or 'pick1'.
+first). Files in subdirectories are not shown.
+This output can be useful as input to other tools, like
+'pickn' or 'pick1'.
+If '-t' is specified then binary files are not shown. Useful
+if you only want to list files that can be opened by a text
+editor (see second example below).
+The order of 'DIR' and '-t' can be swapped at the command
+line.
 
 Examples:
 
-List log files created by 'logop':
-
-    $ lfiles ~/log
-    /home/user/log/20161120205104_tBS.txt
-    /home/user/log/20161120153503_zyW.txt
-    /home/user/log/20161120153224_sFf.txt
-
-Choose one log file to view:
+Choose one logfile created by 'logop' and open it in 'less'
 
     $ lfiles ~/log | pick1 | xargs -r less
 
-See also: 'pick1', 'pickn', 'logop'
+Open the non-binary files of the current working directory
+in 'vim':
+
+    $ lfiles -t | flon
+
+See also: 'pick1', 'pickn', 'logop', 'flon'
 DOCSTRING
 }
 
 checkForHelp $1
+require file
 
-find "$(readlink -f ${1:-.})" -maxdepth 1 -type f -printf '%C@ %p\n' | sort -r | cut -d ' ' -f 2
+showBinary=true
+dir=.
+
+while [ -n "$1" ]; do
+
+    if [ "$1" = "-t" ]; then
+        showBinary=false
+    else
+        dir="$1"
+    fi
+
+    shift
+
+done
+
+if $showBinary; then
+
+    # Show all files:
+    find -L "$(readlink -f "$dir")" -maxdepth 1 -type f -printf '%C@ %p\n' | sort -r | cut -d ' ' -f 2
+
+else
+
+    # Don't show binary files:
+    find -L "$(readlink -f "$dir")" -maxdepth 1 -type f -printf '%C@ %p\n' | sort -r | cut -d ' ' -f 2 | xargs -r -L 1 file | grep ASCII | cut -d: -f1
+
+fi
