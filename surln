@@ -1,0 +1,49 @@
+#!/bin/bash
+
+. rabot-utils
+if [ "$?" -ne "0" ]; then
+  echo "$0: Error while sourcing rabot-utils" >&2
+  exit 1
+fi
+
+function showHelp
+{
+cat << DOCSTRING
+Usage: $(basename "$0") [STRING]
+
+'$(basename "$0")' surrounds every line of stdin with the
+string given as argument and prints the result on stdout.
+When no argument is given, the string will be the double
+quotes character (ASCII value 34).
+Special characters need to be escaped. Octal or hexadecimal
+notation can be used.
+
+Examples:
+
+Surround every line with double quotes:
+
+    $ (echo One; echo Two) | surln
+    "One"
+    "Two"
+
+Surround every line with single quotes:
+
+    $ echo Hello | surln \'
+    'Hello'
+
+Do the same as in the previous example, but
+with hexadecimal notation:
+
+    $ echo Hello | surln \\x27
+    'Hello'
+
+DOCSTRING
+}
+
+checkForHelp $1
+require file
+
+
+surround_char=$(echo -e "${1:-\"}")
+
+sed -e "s/\(.*\)/${surround_char}\1${surround_char}/g"
