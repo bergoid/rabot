@@ -570,6 +570,39 @@ randid
       $ randid 5
       mx2ft
 
+surln
+-----
+::
+
+  Usage: surln [STRING]
+
+  'surln' surrounds every line of stdin with the
+  string given as argument and prints the result on stdout.
+  When no argument is given, the string will be the double
+  quotes character (ASCII value 34).
+  Special characters need to be escaped. Octal or hexadecimal
+  notation can be used.
+
+  Examples:
+
+  Surround every line with double quotes:
+
+      $ (echo One; echo Two) | surln
+      "One"
+      "Two"
+
+  Surround every line with single quotes:
+
+      $ echo Hello | surln \'
+      'Hello'
+
+  Do the same as in the previous example, but
+  with hexadecimal notation:
+
+      $ echo Hello | surln \x27
+      'Hello'
+
+
 tgzdir
 ------
 ::
