@@ -60,7 +60,7 @@ done
 if $showBinary; then
 
     # Show all files:
-    find -L "$(readlink -f "$dir")" -maxdepth 1 -type f -printf '%C@ %p\n' | sort -r | cut -d ' ' -f 2-
+    find -L "$(readlink -f "$dir")" -maxdepth 1 -type f -printf '%T@ %p\n' | sort -r | cut -d ' ' -f 2-
 
 else
 
