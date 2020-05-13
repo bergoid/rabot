@@ -48,4 +48,4 @@ require vim
 
 vimFile="${RABOT_VIMNAV:-"$(rabotInstallDir)/vimnav"}"
 
-vim -c "so $vimFile" -c "set errorformat=%f" -c "cb!" -c "copen" -
+vim -c "so $vimFile" -c "set errorformat=%f" -c "cb!" -c "copen" -c "res -5" -
