@@ -89,11 +89,11 @@ function exitOnError
 #   ...
 # fi
 #
-function succeeds
-{
-    "$@" > /dev/null 2>&1
-    [ "$?" -eq "0" ]
-}
+#function succeeds
+#{
+#    "$@" > /dev/null 2>&1
+#    [ "$?" -eq "0" ]
+#}
 
 
 ############################################################
@@ -109,11 +109,11 @@ function succeeds
 #   ...
 # fi
 #
-function fails
-{
-    "$@" > /dev/null 2>&1
-    [ "$?" -ne "0" ]
-}
+#function fails
+#{
+#    "$@" > /dev/null 2>&1
+#    [ "$?" -ne "0" ]
+#}
 
 
 ############################################################
@@ -299,6 +299,37 @@ function trimTrailingSlashes
         *[/]) echo "/";;
         *) echo "$1";;
     esac
+}
+
+
+############################################################
+#
+# Trim leading & trailing whitespace from an argument string.
+# Spaces between words are left untouched.
+#
+# trimOuterWhitespace STRING
+#
+# STRING : the argument string
+#
+# Example:
+#
+#   echo ---$(trimOuterWhitespace "   Hello   there!      ")---
+#   ---Hello   there!---
+#
+# Source:
+# https://stackoverflow.com/a/3352015
+#
+function trimOuterWhitespace
+{
+    local var="$*"
+
+    # remove leading whitespace characters
+    var="${var#"${var%%[![:space:]]*}"}"
+
+    # remove trailing whitespace characters
+    var="${var%"${var##*[![:space:]]}"}"
+
+    echo "$var"
 }
 
 
