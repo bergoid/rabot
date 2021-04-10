@@ -89,11 +89,11 @@ function exitOnError
 #   ...
 # fi
 #
-#function succeeds
-#{
-#    "$@" > /dev/null 2>&1
-#    [ "$?" -eq "0" ]
-#}
+function succeeds
+{
+    "$@" > /dev/null 2>&1
+    [ "$?" -eq "0" ]
+}
 
 
 ############################################################
@@ -109,11 +109,11 @@ function exitOnError
 #   ...
 # fi
 #
-#function fails
-#{
-#    "$@" > /dev/null 2>&1
-#    [ "$?" -ne "0" ]
-#}
+function fails
+{
+    "$@" > /dev/null 2>&1
+    [ "$?" -ne "0" ]
+}
 
 
 ############################################################
@@ -734,6 +734,36 @@ function elapsedTime
 
 ############################################################
 #
+# Prints the help text of a script file
+# If the script contains a "SCRIPTHELP {BEGIN|END}"-block,
+# then the text within that block will be printed.
+# Otherwise, the output of 'FILENAME --help' is shown.
+#
+# scriptHelp FILENAME
+#
+function scriptHelp
+{
+    local filename="$1"
+    local markerStart="# SCRIPTHELP BEGIN"
+    local markerEnd="# SCRIPTHELP END"
+
+    if succeeds grep "^# SCRIPTHELP BEGIN" "$filename" && \
+       succeeds grep "^# SCRIPTHELP END" "$filename"; then
+
+        sed -n "/^# SCRIPTHELP BEGIN/,/^# SCRIPTHELP END/p" "$filename" | \
+        tail -n +2 | \
+        head -n -1 | \
+        sed -r "s/^#\s?//g"
+
+    else
+
+        "$filename" --help
+
+    fi
+}
+
+############################################################
+#
 # Look for all executable files in a directory tree and
 # call them one by one with the option '--help'.
 # In between the resulting output, markup is added in
@@ -752,7 +782,7 @@ function allHelp
         echo $name | tr [:print:] '-'
         echo ::
         echo
-        $fullname --help | sed "s/^/  /" | sed "s/[[:space:]]*$//"
+        scriptHelp "$fullname" | sed "s/^/  /" | sed "s/[[:space:]]*$//"
         echo
     done < <(fnd $1 -executable ! -type d | sort)
 }
