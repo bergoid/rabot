@@ -249,6 +249,47 @@ function pause
 
 ############################################################
 #
+# Ask the user for an answer and return true if it is equal
+# to a particular value.
+#
+# askUser MESSAGE GOOD_ANSWER [DEFAULT_ANSWER] [ci]
+#
+#        MESSAGE: the message that must be shown before the prompt.
+#    GOOD_ANSWER: this function returns 'true' if the user's answer
+#                 equals GOOD_ANSWER. 'false' otherwise.
+# DEFAULT_ANSWER: If the user just presses 'Enter', their answer is
+#                 assumed to be DEFAULT_ANSWER
+#             ci: Specify if you want a case-insensitive match. This
+#                 is necessary for prompts like:
+#                   "Are you sure [y/N]?"
+#                 With 'ci', both the lowercase and the uppercase
+#                 variant of the GOOD_ANSWER are accepted.
+#
+function askUser
+{
+    local message="$1"
+    local goodAnswer="$2"
+    local defaultAnswer="$3"
+    local ci="$4"
+
+    try test -n "$message"
+    try test -n "$goodAnswer"
+
+    local answer=
+
+    echo -n "$message: " && read answer
+    answer=${answer:-"$defaultAnswer"}
+
+    if [ "${ci,,}" = "ci" ]; then
+        [ "X_${answer,,}" = "X_${goodAnswer,,}" ]
+    else
+        [ "X_$answer" = "X_$goodAnswer" ]
+    fi
+}
+
+
+############################################################
+#
 # Prompt for the value of a variable, only if the variable
 # currently has an empty value.
 #
