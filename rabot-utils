@@ -162,41 +162,41 @@ function warn
 }
 
 
-############################################################
-#
-# Run a command with 'try' and on success, push an
-# 'undo' command on the undo stack, to be
-# executed when the script exits.
-#
-# tru UNDO_COMMAND COMMAND [ARGS ...]
-#
-# This allows for the graceful release of a series of
-# acquired resources if an error stops the script.
-#
-# Example:
-#
-# This code, with a syntax error on the 3rd line:
-#
-#   tru "echo Close A" echo Open A
-#   tru "echo Close B" echo Open B
-#   tru "echo Close C" echoX Open C
-#   tru "echo Close D" echo Open D
-#   tru "echo Close E" echo Open E
-#
-# will result in this output:
-#
-#   Open A
-#   Open B
-#   /home/user/tools/rabot/rabot-utils: line 92: echoX: command not found
-#   Error when running command: 'echoX Open C'
-#   Close B
-#   Close A
-#
-function tru
-{
-    try "${@:2}"
-    pushExitCommand "$1"
-}
+# ############################################################
+# #
+# # Run a command with 'try' and on success, push an
+# # 'undo' command on the undo stack, to be
+# # executed when the script exits.
+# #
+# # tru UNDO_COMMAND COMMAND [ARGS ...]
+# #
+# # This allows for the graceful release of a series of
+# # acquired resources if an error stops the script.
+# #
+# # Example:
+# #
+# # This code, with a syntax error on the 3rd line:
+# #
+# #   tru "echo Close A" echo Open A
+# #   tru "echo Close B" echo Open B
+# #   tru "echo Close C" echoX Open C
+# #   tru "echo Close D" echo Open D
+# #   tru "echo Close E" echo Open E
+# #
+# # will result in this output:
+# #
+# #   Open A
+# #   Open B
+# #   /home/user/tools/rabot/rabot-utils: line 92: echoX: command not found
+# #   Error when running command: 'echoX Open C'
+# #   Close B
+# #   Close A
+# #
+# function tru
+# {
+#     try "${@:2}"
+#     pushExitCommand "$1"
+# }
 
 
 ############################################################
@@ -210,7 +210,7 @@ declare -a __undo_stack
 function __at_exit
 {
     for (( idx=${#__undo_stack[@]}-1 ; idx>=0 ; idx-- )); do
-        warn ${__undo_stack[idx]}
+        warn ${__undo_stack[$idx]}
     done
 }
 trap "__at_exit" EXIT
@@ -222,15 +222,15 @@ trap "__at_exit" EXIT
 # When this function is called multiple times, the commands
 # will be executed in LIFO order.
 #
-# pushExitCommand COMMAND
+# defer COMMAND [ARGS ...]
 #
 # Example:
 #
-#   pushExitCommand "echo The script is exiting ..."
+#   defer echo "The script is exiting ..."
 #
-function pushExitCommand
+function defer
 {
-    __undo_stack+=("$1")
+    __undo_stack+=("$*")
 }
 
 
